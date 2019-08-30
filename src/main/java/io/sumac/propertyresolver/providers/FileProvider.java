@@ -1,0 +1,30 @@
+package io.sumac.propertyresolver.providers;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
+import io.sumac.propertyresolver.PropertyResolverException;
+
+public class FileProvider extends RefreshableProvider {
+
+	private final Path filePath;
+
+	public FileProvider(Path filePath) {
+		this.filePath = filePath;
+		refresh();
+	}
+
+	@Override
+	protected Properties fetchAll() {
+		var props = new Properties();
+		try (final var inputStream = Files.newInputStream(filePath)) {
+			props.load(inputStream);
+			return props;
+		} catch (IOException e) {
+			throw PropertyResolverException.errorReadingPropertyFile(filePath, e);
+		}
+	}
+
+}
