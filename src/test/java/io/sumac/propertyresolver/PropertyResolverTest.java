@@ -1,14 +1,22 @@
 package io.sumac.propertyresolver;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
 import io.sumac.propertyresolver.sample.Model1;
 import io.sumac.propertyresolver.sample.Model2;
 import io.sumac.propertyresolver.sample.Model3;
+import io.sumac.propertyresolver.sample.Model4;
+import io.sumac.propertyresolver.sample.Model5;
+import io.sumac.propertyresolver.sample.Model6;
+import io.sumac.propertyresolver.sample.Model7;
+import io.sumac.propertyresolver.sample.Model8;
+import io.sumac.propertyresolver.sample.Model9;
 
 public class PropertyResolverTest {
 
@@ -34,6 +42,75 @@ public class PropertyResolverTest {
 				.build();
 		var output = systemUnderTest.to(Model3.class);
 		validate(output);
+	}
+
+	@Test
+	public void fillInTest_fields() {
+		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.build();
+		var model = new Model1();
+		systemUnderTest.fillIn(model);
+		validate(model);
+	}
+
+	@Test
+	public void fillInTest_methods() {
+		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.build();
+		var model = new Model2();
+		systemUnderTest.fillIn(model);
+		validate(model);
+	}
+
+	@Test
+	public void toTest_missingFields() {
+		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.build();
+		var output = assertThrows(PropertyResolverException.class, () -> systemUnderTest.to(Model4.class));
+		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
+	}
+
+	@Test
+	public void toTest_missingMethods() {
+		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.build();
+		var output = assertThrows(PropertyResolverException.class, () -> systemUnderTest.to(Model5.class));
+		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
+	}
+
+	@Test
+	public void toTest_missingParameters() {
+		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.build();
+		var output = assertThrows(PropertyResolverException.class, () -> systemUnderTest.to(Model6.class));
+		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
+	}
+
+	@Test
+	public void toTest_optionalFields() {
+		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.build();
+		var output = systemUnderTest.to(Model7.class);
+		assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
+				() -> assertThat(output.getNotFoundString(), nullValue()));
+	}
+
+	@Test
+	public void toTest_optionalMethods() {
+		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.build();
+		var output = systemUnderTest.to(Model8.class);
+		assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
+				() -> assertThat(output.getNotFoundString(), nullValue()));
+	}
+
+	@Test
+	public void toTest_optionalParameters() {
+		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.build();
+		var output = systemUnderTest.to(Model9.class);
+		assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
+				() -> assertThat(output.getNotFoundString(), nullValue()));
 	}
 
 	private void validate(Model1 model) {
