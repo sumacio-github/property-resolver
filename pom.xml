@@ -52,13 +52,6 @@
 			<version>3.0.0</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-    <groupId>com.github.stefanbirkner</groupId>
-    <artifactId>system-rules</artifactId>
-    <version>1.19.0</version>
-    <scope>test</scope>
-</dependency>
-		
 	</dependencies>
 	<build>
 		<plugins>
@@ -92,24 +85,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
-				<configuration>
-					<systemPropertyVariables>
-						<test.found.string>hello world</test.found.string>
-						<test.found.int>32</test.found.int>
-						<test.found.long>64</test.found.long>
-						<test.found.float>1.1</test.found.float>
-						<test.found.double>2.2</test.found.double>
-						<test.found.boolean>true</test.found.boolean>
-					</systemPropertyVariables>
-					<environmentVariables>
-						<test.found.string>hello world</test.found.string>
-						<test.found.int>32</test.found.int>
-						<test.found.long>64</test.found.long>
-						<test.found.float>1.1</test.found.float>
-						<test.found.double>2.22</test.found.double>
-						<test.found.boolean>true</test.found.boolean>
-					</environmentVariables>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

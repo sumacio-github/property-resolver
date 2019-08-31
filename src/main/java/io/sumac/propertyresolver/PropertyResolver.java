@@ -16,19 +16,21 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import javax.sql.DataSource;
 
 import io.sumac.propertyresolver.annotations.Property;
 import io.sumac.propertyresolver.providers.ClassPathResourceProvider;
 import io.sumac.propertyresolver.providers.CompositeProvider;
-import io.sumac.propertyresolver.providers.EnvironmentVariableProvider;
 import io.sumac.propertyresolver.providers.FileProvider;
 import io.sumac.propertyresolver.providers.JdbcProvider;
 import io.sumac.propertyresolver.providers.RefreshableProvider;
 import io.sumac.propertyresolver.providers.SystemArgumentProvider;
 
 public class PropertyResolver extends CompositeProvider {
+
+	private BiConsumer<String, Optional<String>> inspector;
 
 	private PropertyResolver(RefreshableProvider... providers) {
 		super(providers);
@@ -74,6 +76,13 @@ public class PropertyResolver extends CompositeProvider {
 				}
 			}
 		}
+	}
+
+	@Override
+	public Optional<String> getString(String key) {
+		var value = super.getString(key);
+		this.inspector.accept(key, value);
+		return value;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -190,17 +199,15 @@ public class PropertyResolver extends CompositeProvider {
 	public static class PropertyResolverBuilder {
 		final List<RefreshableProvider> providers = new ArrayList<>();
 
+		private BiConsumer<String, Optional<String>> inspector = (key, value) -> {
+		};
+
 		private PropertyResolverBuilder() {
 
 		}
 
 		public PropertyResolverBuilder addSystemArguments() {
 			providers.add(new SystemArgumentProvider());
-			return this;
-		}
-
-		public PropertyResolverBuilder addEnvironmentVariables() {
-			providers.add(new EnvironmentVariableProvider());
 			return this;
 		}
 
@@ -219,8 +226,15 @@ public class PropertyResolver extends CompositeProvider {
 			return this;
 		}
 
+		public PropertyResolverBuilder useCustomInspector(BiConsumer<String, Optional<String>> customInspector) {
+			this.inspector = customInspector;
+			return this;
+		}
+
 		public PropertyResolver build() {
-			return new PropertyResolver(providers.toArray(new RefreshableProvider[0]));
+			var propertyResolver = new PropertyResolver(providers.toArray(new RefreshableProvider[0]));
+			propertyResolver.inspector = this.inspector;
+			return propertyResolver;
 		}
 	}
 
