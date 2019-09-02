@@ -7,6 +7,7 @@ import static io.sumac.propertyresolver.TypeTransformer.isInt;
 import static io.sumac.propertyresolver.TypeTransformer.isLong;
 import static io.sumac.propertyresolver.TypeTransformer.isString;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,11 +17,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 import javax.sql.DataSource;
 
 import io.sumac.propertyresolver.annotations.Property;
+import io.sumac.propertyresolver.functions.SerializableBiConsumer;
+import io.sumac.propertyresolver.functions.SerializableUnaryOperator;
 import io.sumac.propertyresolver.providers.ClassPathResourceProvider;
 import io.sumac.propertyresolver.providers.CompositeProvider;
 import io.sumac.propertyresolver.providers.FileProvider;
@@ -28,9 +30,13 @@ import io.sumac.propertyresolver.providers.JdbcProvider;
 import io.sumac.propertyresolver.providers.RefreshableProvider;
 import io.sumac.propertyresolver.providers.SystemArgumentProvider;
 
-public class PropertyResolver extends CompositeProvider {
+public class PropertyResolver extends CompositeProvider implements Serializable {
 
-	private BiConsumer<String, Optional<String>> inspector;
+	private static final long serialVersionUID = -5491745026934786712L;
+
+	private SerializableBiConsumer inspector;
+
+	private SerializableUnaryOperator transformer;
 
 	private PropertyResolver(RefreshableProvider... providers) {
 		super(providers);
@@ -49,7 +55,7 @@ public class PropertyResolver extends CompositeProvider {
 		} catch (PropertyResolverException e) {
 			throw e;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
+				| SecurityException e) {
 			throw PropertyResolverException.wrapCheckedReflectionExceptions(e);
 		}
 	}
@@ -81,13 +87,16 @@ public class PropertyResolver extends CompositeProvider {
 	@Override
 	public Optional<String> getString(String key) {
 		var value = super.getString(key);
+		if (value.isPresent()) {
+			value = value.map(transformer::apply);
+		}
 		this.inspector.accept(key, value);
 		return value;
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T construct(Class<T> type) throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	private <T> T construct(Class<T> type)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		var properties = new ArrayList<Object>();
 		var constructor = type.getDeclaredConstructors()[0];
 		constructor.setAccessible(true);
@@ -113,7 +122,7 @@ public class PropertyResolver extends CompositeProvider {
 		return (T) constructor.newInstance(properties.toArray());
 	}
 
-	private <T> void populateFields(T obj) throws IllegalArgumentException, IllegalAccessException {
+	private <T> void populateFields(T obj) throws IllegalAccessException {
 		for (Field field : obj.getClass().getDeclaredFields()) {
 			if (field.isAnnotationPresent(Property.class)) {
 				setPrimitives(field, obj);
@@ -121,7 +130,7 @@ public class PropertyResolver extends CompositeProvider {
 		}
 	}
 
-	private void setPrimitives(Field field, Object obj) throws IllegalArgumentException, IllegalAccessException {
+	private void setPrimitives(Field field, Object obj) throws IllegalAccessException {
 		var isAccessible = field.canAccess(obj);
 		field.setAccessible(true);
 		Property property = field.getAnnotation(Property.class);
@@ -143,8 +152,7 @@ public class PropertyResolver extends CompositeProvider {
 		field.setAccessible(isAccessible);
 	}
 
-	private <T> void populateBySetters(T obj)
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private <T> void populateBySetters(T obj) throws IllegalAccessException, InvocationTargetException {
 		for (Method method : obj.getClass().getDeclaredMethods()) {
 			if (method.isAnnotationPresent(Property.class)) {
 				validateSetterMethod(method);
@@ -162,8 +170,7 @@ public class PropertyResolver extends CompositeProvider {
 		}
 	}
 
-	private void setPrimitives(Method method, Object obj)
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private void setPrimitives(Method method, Object obj) throws IllegalAccessException, InvocationTargetException {
 		var isAccessible = method.canAccess(obj);
 		method.setAccessible(true);
 		var property = method.getAnnotation(Property.class);
@@ -199,8 +206,10 @@ public class PropertyResolver extends CompositeProvider {
 	public static class PropertyResolverBuilder {
 		final List<RefreshableProvider> providers = new ArrayList<>();
 
-		private BiConsumer<String, Optional<String>> inspector = (key, value) -> {
+		private SerializableBiConsumer inspector = (key, value) -> {
 		};
+
+		private SerializableUnaryOperator transformer = value -> value;
 
 		private PropertyResolverBuilder() {
 
@@ -226,14 +235,20 @@ public class PropertyResolver extends CompositeProvider {
 			return this;
 		}
 
-		public PropertyResolverBuilder useCustomInspector(BiConsumer<String, Optional<String>> customInspector) {
+		public PropertyResolverBuilder useCustomInspector(SerializableBiConsumer customInspector) {
 			this.inspector = customInspector;
+			return this;
+		}
+
+		public PropertyResolverBuilder useCustomTransformer(SerializableUnaryOperator customTransformer) {
+			this.transformer = customTransformer;
 			return this;
 		}
 
 		public PropertyResolver build() {
 			var propertyResolver = new PropertyResolver(providers.toArray(new RefreshableProvider[0]));
 			propertyResolver.inspector = this.inspector;
+			propertyResolver.transformer = this.transformer;
 			return propertyResolver;
 		}
 	}

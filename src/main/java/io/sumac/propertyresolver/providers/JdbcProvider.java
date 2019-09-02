@@ -1,5 +1,6 @@
 package io.sumac.propertyresolver.providers;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,8 +11,9 @@ import javax.sql.DataSource;
 
 import io.sumac.propertyresolver.PropertyResolverException;
 
-public class JdbcProvider extends RefreshableProvider {
+public class JdbcProvider extends RefreshableProvider implements Serializable {
 
+	private static final long serialVersionUID = 5693845038835048650L;
 	private final DataSource dataSource;
 	private final String username;
 	private final String password;

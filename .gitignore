@@ -15,6 +15,7 @@ tmp
 *.tar
 *.tar.gz
 *.rar
+*.bin
 hs_err_pid*
 *~
 .DS_Store

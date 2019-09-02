@@ -7,7 +7,7 @@ import java.lang.reflect.Parameter;
 import java.nio.file.Path;
 import java.sql.SQLException;
 
-public abstract class PropertyResolverException extends IllegalArgumentException {
+public abstract class PropertyResolverException extends RuntimeException {
 
 	private static final long serialVersionUID = 5679265155061006371L;
 
@@ -19,20 +19,12 @@ public abstract class PropertyResolverException extends IllegalArgumentException
 		super(msg, t);
 	}
 
-	public static PropertyResolverException classpathPropertiesFileNotFound(String propertiesFile) {
-		return new PropertySourceNotFoundException("File not found on classpath: '" + propertiesFile + "'");
-	}
-
 	public static PropertyResolverException errorReadingClasspathPropertyFile(String propertiesFile, IOException e) {
 		return new PropertySourceNotFoundException("File not found on classpath: '" + propertiesFile + "'", e);
 	}
 
 	public static PropertyResolverException errorReadingClasspathPropertyFile(String propertiesFile) {
 		return new PropertySourceNotFoundException("File not found on classpath: '" + propertiesFile + "'");
-	}
-
-	public static PropertyResolverException propertiesFileNotFound(Path propertiesFile) {
-		return new PropertySourceNotFoundException("File not found: '" + propertiesFile + "'");
 	}
 
 	public static PropertyResolverException errorReadingPropertyFile(Path propertiesFile, IOException e) {
@@ -70,10 +62,6 @@ public abstract class PropertyResolverException extends IllegalArgumentException
 
 	static PropertyResolverException noSetterArgs(Method method) {
 		return new BadSetterMethodException("No arguments: " + method.getName());
-	}
-
-	static PropertyResolverException decryptionEnvironmentVariableNotFound(String name) {
-		return new InvalidDecryptionConfigurationException("Environment variable not found: " + name);
 	}
 
 	public static PropertyResolverException sqlError(SQLException e) {
@@ -135,15 +123,6 @@ public abstract class PropertyResolverException extends IllegalArgumentException
 
 		private ReflectionErrorException(String msg, Throwable t) {
 			super(msg, t);
-		}
-	}
-
-	static class InvalidDecryptionConfigurationException extends PropertyResolverException {
-
-		private static final long serialVersionUID = 4336523693254939437L;
-
-		private InvalidDecryptionConfigurationException(String msg) {
-			super(msg);
 		}
 	}
 

@@ -6,12 +6,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Optional;
-import java.util.function.BiConsumer;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
 
+import io.sumac.propertyresolver.functions.SerializableBiConsumer;
+import io.sumac.propertyresolver.functions.SerializableUnaryOperator;
 import io.sumac.propertyresolver.sample.Model1;
 import io.sumac.propertyresolver.sample.Model2;
 import io.sumac.propertyresolver.sample.Model3;
@@ -26,14 +32,16 @@ public class PropertyResolverTest {
 
 	private static final Logger LOGGER = Logger.getLogger(PropertyResolverTest.class.getName());
 
-	private BiConsumer<String, Optional<String>> customInspector = (key, value) -> {
+	private SerializableBiConsumer customLoggingInspector = (key, value) -> {
 		LOGGER.info(String.format("%s=%s", key, value.isPresent() ? value.get() : "<NULL>"));
 	};
+
+	private SerializableUnaryOperator customToUpperCaseTransformer = s -> s.toUpperCase();
 
 	@Test
 	public void toTest_fields() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var output = systemUnderTest.to(Model1.class);
 		validate(output);
 	}
@@ -41,7 +49,7 @@ public class PropertyResolverTest {
 	@Test
 	public void toTest_methods() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var output = systemUnderTest.to(Model2.class);
 		validate(output);
 	}
@@ -49,7 +57,7 @@ public class PropertyResolverTest {
 	@Test
 	public void toTest_parameters() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var output = systemUnderTest.to(Model3.class);
 		validate(output);
 	}
@@ -57,7 +65,7 @@ public class PropertyResolverTest {
 	@Test
 	public void fillInTest_fields() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var model = new Model1();
 		systemUnderTest.fillIn(model);
 		validate(model);
@@ -66,7 +74,7 @@ public class PropertyResolverTest {
 	@Test
 	public void fillInTest_methods() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var model = new Model2();
 		systemUnderTest.fillIn(model);
 		validate(model);
@@ -75,7 +83,7 @@ public class PropertyResolverTest {
 	@Test
 	public void toTest_missingFields() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var output = assertThrows(PropertyResolverException.class, () -> systemUnderTest.to(Model4.class));
 		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
 	}
@@ -83,7 +91,7 @@ public class PropertyResolverTest {
 	@Test
 	public void toTest_missingMethods() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var output = assertThrows(PropertyResolverException.class, () -> systemUnderTest.to(Model5.class));
 		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
 	}
@@ -91,7 +99,7 @@ public class PropertyResolverTest {
 	@Test
 	public void toTest_missingParameters() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var output = assertThrows(PropertyResolverException.class, () -> systemUnderTest.to(Model6.class));
 		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
 	}
@@ -99,32 +107,54 @@ public class PropertyResolverTest {
 	@Test
 	public void toTest_optionalFields() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var output = systemUnderTest.to(Model7.class);
-		assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
+		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(output.getNotFoundString(), nullValue()));
 	}
 
 	@Test
 	public void toTest_optionalMethods() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var output = systemUnderTest.to(Model8.class);
-		assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
+		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(output.getNotFoundString(), nullValue()));
 	}
 
 	@Test
 	public void toTest_optionalParameters() {
 		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customInspector).build();
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
 		var output = systemUnderTest.to(Model9.class);
-		assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
+		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(output.getNotFoundString(), nullValue()));
 	}
 
+	@Test
+	public void serializableTest() throws FileNotFoundException, IOException, ClassNotFoundException {
+		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.useCustomInspector(customLoggingInspector).useCustomTransformer(customToUpperCaseTransformer).build();
+
+		System.out.println(systemUnderTest.to(Model1.class));
+
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("property_resolver.bin"))) {
+
+			out.writeObject(systemUnderTest);
+		}
+
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("property_resolver.bin"))) {
+
+			PropertyResolver output = (PropertyResolver) in.readObject();
+			// output.refresh();
+			System.out.println(output.to(Model1.class));
+			validate(output.to(Model1.class));
+		}
+
+	}
+
 	private void validate(Model1 model) {
-		assertAll(() -> assertThat(model.getFoundString(), is("hello world")),
+		assertAll(() -> assertThat(model.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(model.getFoundInteger(), is(32)),
 				() -> assertThat(model.getFoundIntegerPrimitive(), is(32)),
 				() -> assertThat(model.getFoundLong(), is(64L)),
@@ -138,7 +168,7 @@ public class PropertyResolverTest {
 	}
 
 	private void validate(Model2 model) {
-		assertAll(() -> assertThat(model.getFoundString(), is("hello world")),
+		assertAll(() -> assertThat(model.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(model.getFoundInteger(), is(32)),
 				() -> assertThat(model.getFoundIntegerPrimitive(), is(32)),
 				() -> assertThat(model.getFoundLong(), is(64L)),
@@ -152,7 +182,7 @@ public class PropertyResolverTest {
 	}
 
 	private void validate(Model3 model) {
-		assertAll(() -> assertThat(model.getFoundString(), is("hello world")),
+		assertAll(() -> assertThat(model.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(model.getFoundInteger(), is(32)),
 				() -> assertThat(model.getFoundIntegerPrimitive(), is(32)),
 				() -> assertThat(model.getFoundLong(), is(64L)),
