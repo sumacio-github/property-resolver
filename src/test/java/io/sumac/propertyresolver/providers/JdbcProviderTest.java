@@ -34,7 +34,7 @@ public class JdbcProviderTest {
 		connection = Mockito.mock(Connection.class);
 		statement = Mockito.mock(Statement.class);
 		resultSet = Mockito.mock(ResultSet.class);
-		Mockito.when(dataSource.getConnection(Mockito.anyString(), Mockito.anyString())).thenReturn(connection);
+		Mockito.when(dataSource.getConnection()).thenReturn(connection);
 		Mockito.when(connection.createStatement()).thenReturn(statement);
 		Mockito.when(statement.executeQuery(Mockito.anyString())).thenReturn(resultSet);
 		Mockito.when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(true)
@@ -52,8 +52,7 @@ public class JdbcProviderTest {
 
 	@Test
 	public void testGetString() {
-		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "username", "password", "table")
-				.build();
+		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "table").build();
 		assertThat(sut.getString("test.found.string").isPresent(), is(true));
 		assertThat(sut.getString("test.found.string").get(), is("hello world"));
 		assertThat(sut.getString("test.not_found.string").isEmpty(), is(true));
@@ -66,8 +65,7 @@ public class JdbcProviderTest {
 
 	@Test
 	public void testGetBoolean() {
-		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "username", "password", "table")
-				.build();
+		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "table").build();
 		assertThat(sut.getBoolean("test.found.boolean").isPresent(), is(true));
 		assertThat(sut.getBoolean("test.found.boolean").get(), is(true));
 		assertThat(sut.getBoolean("test.not_found.boolean").isEmpty(), is(true));
@@ -79,8 +77,7 @@ public class JdbcProviderTest {
 
 	@Test
 	public void testGetInt() {
-		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "username", "password", "table")
-				.build();
+		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "table").build();
 		assertThat(sut.getInt("test.found.int").isPresent(), is(true));
 		assertThat(sut.getInt("test.found.int").get(), is(32));
 		assertThat(sut.getInt("test.not_found.int").isEmpty(), is(true));
@@ -92,8 +89,7 @@ public class JdbcProviderTest {
 
 	@Test
 	public void testGetLong() {
-		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "username", "password", "table")
-				.build();
+		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "table").build();
 		assertThat(sut.getLong("test.found.long").isPresent(), is(true));
 		assertThat(sut.getLong("test.found.long").get(), is(64L));
 		assertThat(sut.getLong("test.not_found.long").isEmpty(), is(true));
@@ -105,8 +101,7 @@ public class JdbcProviderTest {
 
 	@Test
 	public void testGetFloat() {
-		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "username", "password", "table")
-				.build();
+		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "table").build();
 		assertThat(sut.getFloat("test.found.float").isPresent(), is(true));
 		assertThat(sut.getFloat("test.found.float").get(), is(1.1F));
 		assertThat(sut.getFloat("test.not_found.float").isEmpty(), is(true));
@@ -118,8 +113,7 @@ public class JdbcProviderTest {
 
 	@Test
 	public void testGetDouble() {
-		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "username", "password", "table")
-				.build();
+		var sut = PropertyResolver.registerProviders().addJdbcTable(dataSource, "table").build();
 		assertThat(sut.getDouble("test.found.double").isPresent(), is(true));
 		assertThat(sut.getDouble("test.found.double").get(), is(2.2));
 		assertThat(sut.getDouble("test.not_found.double").isEmpty(), is(true));
@@ -132,10 +126,9 @@ public class JdbcProviderTest {
 	@Test
 	public void testConnectionError() throws SQLException {
 		DataSource ds = Mockito.mock(DataSource.class);
-		Mockito.when(ds.getConnection(Mockito.anyString(), Mockito.anyString()))
-				.thenThrow(new SQLException("connection failed"));
+		Mockito.when(ds.getConnection()).thenThrow(new SQLException("connection failed"));
 		try {
-			PropertyResolver.registerProviders().addJdbcTable(ds, "username", "password", "table");
+			PropertyResolver.registerProviders().addJdbcTable(ds, "table");
 			fail("Expected PropertyResolverException but no Exceptions thrown.");
 		} catch (Exception e) {
 			assertThat(e, is(instanceOf(PropertyResolverException.class)));
@@ -150,11 +143,11 @@ public class JdbcProviderTest {
 		DataSource ds = Mockito.mock(DataSource.class);
 		Connection conn = Mockito.mock(Connection.class);
 		Statement stmt = Mockito.mock(Statement.class);
-		Mockito.when(ds.getConnection(Mockito.anyString(), Mockito.anyString())).thenReturn(conn);
+		Mockito.when(ds.getConnection()).thenReturn(conn);
 		Mockito.when(conn.createStatement()).thenReturn(stmt);
 		Mockito.when(stmt.executeQuery(Mockito.anyString())).thenThrow(new SQLException("query failed"));
 		try {
-			PropertyResolver.registerProviders().addJdbcTable(ds, "username", "password", "table");
+			PropertyResolver.registerProviders().addJdbcTable(ds, "table");
 			fail("Expected PropertyResolverException but no Exceptions thrown.");
 		} catch (Exception e) {
 			assertThat(e, is(instanceOf(PropertyResolverException.class)));
@@ -170,18 +163,7 @@ public class JdbcProviderTest {
 		Connection conn = Mockito.mock(Connection.class);
 		Statement stmt = Mockito.mock(Statement.class);
 		ResultSet rs = Mockito.mock(ResultSet.class);
-		Mockito.doAnswer(new Answer<Connection>() {
-
-			@Override
-			public Connection answer(InvocationOnMock invocation) throws Throwable {
-				String username = invocation.getArgument(0, String.class);
-				String password = invocation.getArgument(1, String.class);
-				assertThat(username, is("username"));
-				assertThat(password, is("password"));
-				return conn;
-			}
-
-		}).when(ds).getConnection(Mockito.anyString(), Mockito.anyString());
+		Mockito.when(ds.getConnection()).thenReturn(conn);
 		Mockito.when(conn.createStatement()).thenReturn(stmt);
 		Mockito.doAnswer(new Answer<ResultSet>() {
 
@@ -194,7 +176,7 @@ public class JdbcProviderTest {
 
 		}).when(stmt).executeQuery(Mockito.anyString());
 		Mockito.when(rs.next()).thenReturn(false);
-		PropertyResolver.registerProviders().addJdbcTable(ds, "username", "password", "table");
+		PropertyResolver.registerProviders().addJdbcTable(ds, "table");
 
 	}
 

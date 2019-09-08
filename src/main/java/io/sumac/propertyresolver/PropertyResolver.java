@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import io.sumac.propertyresolver.annotations.Property;
 import io.sumac.propertyresolver.functions.SerializableBiConsumer;
+import io.sumac.propertyresolver.functions.SerializableConsumer;
 import io.sumac.propertyresolver.functions.SerializableUnaryOperator;
 import io.sumac.propertyresolver.providers.ClassPathResourceProvider;
 import io.sumac.propertyresolver.providers.CompositeProvider;
@@ -35,6 +36,7 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 	private static final long serialVersionUID = -5491745026934786712L;
 
 	private SerializableBiConsumer inspector;
+	private SerializableConsumer propertyNotFoundHandler;
 
 	private SerializableUnaryOperator transformer;
 
@@ -87,11 +89,16 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 	@Override
 	public Optional<String> getString(String key) {
 		var value = super.getString(key);
-		if (value.isPresent()) {
-			value = value.map(transformer::apply);
+		if (value.isEmpty()) {
+			this.propertyNotFoundHandler.accept(key);
+			return value;
+		} else {
+			return value.map(v -> {
+				var transformedValue = transformer.apply(v);
+				this.inspector.accept(key, transformedValue);
+				return transformedValue;
+			});
 		}
-		this.inspector.accept(key, value);
-		return value;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -194,12 +201,18 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 	}
 
 	private Object handleOptional(Property property, Optional<?> value) {
-		if (!property.optional() && !value.isPresent()) {
-			throw PropertyResolverException.propertyNotFound(property.name());
-		} else if (property.optional() && !value.isPresent()) {
-			return null;
+		if (property.optional()) {
+			if (value.isPresent()) {
+				return value.get();
+			} else {
+				return null;
+			}
 		} else {
-			return value.get();
+			if (value.isPresent()) {
+				return value.get();
+			} else {
+				throw PropertyResolverException.propertyNotFound(property.name());
+			}
 		}
 	}
 
@@ -207,6 +220,8 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 		final List<RefreshableProvider> providers = new ArrayList<>();
 
 		private SerializableBiConsumer inspector = (key, value) -> {
+		};
+		private SerializableConsumer propertyNotFoundHandler = key -> {
 		};
 
 		private SerializableUnaryOperator transformer = value -> value;
@@ -230,13 +245,19 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 			return this;
 		}
 
-		public PropertyResolverBuilder addJdbcTable(DataSource source, String username, String password, String table) {
-			providers.add(new JdbcProvider(source, username, password, table));
+		public PropertyResolverBuilder addJdbcTable(DataSource source, String table) {
+			providers.add(new JdbcProvider(source, table));
 			return this;
 		}
 
 		public PropertyResolverBuilder useCustomInspector(SerializableBiConsumer customInspector) {
 			this.inspector = customInspector;
+			return this;
+		}
+
+		public PropertyResolverBuilder useCustomPropertyNotFoundHandler(
+				SerializableConsumer customPropertyNotFoundHandler) {
+			this.propertyNotFoundHandler = customPropertyNotFoundHandler;
 			return this;
 		}
 
@@ -248,6 +269,7 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 		public PropertyResolver build() {
 			var propertyResolver = new PropertyResolver(providers.toArray(new RefreshableProvider[0]));
 			propertyResolver.inspector = this.inspector;
+			propertyResolver.propertyNotFoundHandler = this.propertyNotFoundHandler;
 			propertyResolver.transformer = this.transformer;
 			return propertyResolver;
 		}

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.nio.file.Path;
 import java.sql.SQLException;
 
 public abstract class PropertyResolverException extends RuntimeException {
@@ -27,7 +26,7 @@ public abstract class PropertyResolverException extends RuntimeException {
 		return new PropertySourceNotFoundException("File not found on classpath: '" + propertiesFile + "'");
 	}
 
-	public static PropertyResolverException errorReadingPropertyFile(Path propertiesFile, IOException e) {
+	public static PropertyResolverException errorReadingPropertyFile(String propertiesFile, IOException e) {
 		return new PropertySourceNotFoundException("File not read: '" + propertiesFile + "'", e);
 	}
 
