@@ -5,7 +5,7 @@
 	<groupId>io.sumac</groupId>
 	<artifactId>property-resolver</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>A library that simplifies reading properties from multiple sources</description>
 	<url>https://github.com/ross-stockman/property-resolver</url>
@@ -23,13 +23,13 @@
 			<organizationUrl>https://github.com/sumacio-github/</organizationUrl>
 		</developer>
 	</developers>
-<distributionManagement>
-    <repository>
-        <id>bintray-ross-stockman-sumac.io-utils</id>
-        <name>ross-stockman-sumac.io-utils</name>
-        <url>https://api.bintray.com/maven/ross-stockman/sumac.io-utils/property-resolver/;publish=1</url>
-    </repository>
-</distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>bintray-ross-stockman-sumac.io-utils</id>
+			<name>ross-stockman-sumac.io-utils</name>
+			<url>https://api.bintray.com/maven/ross-stockman/sumac.io-utils/property-resolver/;publish=1</url>
+		</repository>
+	</distributionManagement>
 	<scm>
 		<connection>scm:git:git://github.com/sumacio-github/property-resolver.git</connection>
 		<developerConnection>scm:git:ssh://github.com/sumacio-github/property-resolver.git</developerConnection>
@@ -37,8 +37,8 @@
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -110,20 +110,9 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.22.2</version>
 			</plugin>
-			<!--		<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>-->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-gpg-plugin</artifactId> 
+				<version>1.6</version> <executions> <execution> <id>sign-artifacts</id> <phase>verify</phase> 
+				<goals> <goal>sign</goal> </goals> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

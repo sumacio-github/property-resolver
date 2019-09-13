@@ -11,40 +11,40 @@ public class TypeTransformerTest {
 
 	@Test
 	public void testToInt() {
-		var input = "32";
-		var output = TypeTransformer.toInt(input);
+		String input = "32";
+		Integer output = TypeTransformer.toInt(input);
 		assertThat(output, is(instanceOf(Integer.class)));
 		assertThat(output, is(32));
 	}
 
 	@Test
 	public void testToLong() {
-		var input = "64";
-		var output = TypeTransformer.toLong(input);
+		String input = "64";
+		Long output = TypeTransformer.toLong(input);
 		assertThat(output, is(instanceOf(Long.class)));
 		assertThat(output, is(64L));
 	}
 
 	@Test
 	public void testToFloat() {
-		var input = "1.1";
-		var output = TypeTransformer.toFloat(input);
+		String input = "1.1";
+		Float output = TypeTransformer.toFloat(input);
 		assertThat(output, is(instanceOf(Float.class)));
 		assertThat(output, is(1.1F));
 	}
 
 	@Test
 	public void testToDouble() {
-		var input = "2.2";
-		var output = TypeTransformer.toDouble(input);
+		String input = "2.2";
+		Double output = TypeTransformer.toDouble(input);
 		assertThat(output, is(instanceOf(Double.class)));
 		assertThat(output, is(2.2));
 	}
 
 	@Test
 	public void testToBoolean() {
-		var input = "true";
-		var output = TypeTransformer.toBoolean(input);
+		String input = "true";
+		Boolean output = TypeTransformer.toBoolean(input);
 		assertThat(output, is(instanceOf(Boolean.class)));
 		assertThat(output, is(true));
 	}

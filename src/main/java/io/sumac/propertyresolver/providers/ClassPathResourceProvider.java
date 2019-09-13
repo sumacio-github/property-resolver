@@ -1,6 +1,7 @@
 package io.sumac.propertyresolver.providers;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Properties;
@@ -19,9 +20,9 @@ public class ClassPathResourceProvider extends RefreshableProvider implements Se
 
 	@Override
 	protected Properties fetchAll() {
-		var props = new Properties();
-		var classLoader = PropertiesProvider.class.getClassLoader();
-		try (final var inputStream = classLoader.getResourceAsStream(resourceName)) {
+		Properties props = new Properties();
+		ClassLoader classLoader = PropertiesProvider.class.getClassLoader();
+		try (final InputStream inputStream = classLoader.getResourceAsStream(resourceName)) {
 			if (Objects.isNull(inputStream)) {
 				throw PropertyResolverException.errorReadingClasspathPropertyFile(resourceName);
 			}

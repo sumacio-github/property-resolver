@@ -88,13 +88,13 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 
 	@Override
 	public Optional<String> getString(String key) {
-		var value = super.getString(key);
-		if (value.isEmpty()) {
+		Optional<String> value = super.getString(key);
+		if (!value.isPresent()) {
 			this.propertyNotFoundHandler.accept(key);
 			return value;
 		} else {
 			return value.map(v -> {
-				var transformedValue = transformer.apply(v);
+				String transformedValue = transformer.apply(v);
 				this.inspector.accept(key, transformedValue);
 				return transformedValue;
 			});
@@ -104,10 +104,10 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 	@SuppressWarnings("unchecked")
 	private <T> T construct(Class<T> type)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		var properties = new ArrayList<Object>();
-		var constructor = type.getDeclaredConstructors()[0];
+		List<Object> properties = new ArrayList<>();
+		Constructor<?> constructor = type.getDeclaredConstructors()[0];
 		constructor.setAccessible(true);
-		var parameters = constructor.getParameters();
+		Parameter[] parameters = constructor.getParameters();
 		for (Parameter parameter : parameters) {
 			Property property = parameter.getAnnotation(Property.class);
 			if (isString(parameter.getType())) {
@@ -138,7 +138,7 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 	}
 
 	private void setPrimitives(Field field, Object obj) throws IllegalAccessException {
-		var isAccessible = field.canAccess(obj);
+		boolean isAccessible = field.isAccessible();
 		field.setAccessible(true);
 		Property property = field.getAnnotation(Property.class);
 		if (isString(field.getType())) {
@@ -178,10 +178,10 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 	}
 
 	private void setPrimitives(Method method, Object obj) throws IllegalAccessException, InvocationTargetException {
-		var isAccessible = method.canAccess(obj);
+		boolean isAccessible = method.isAccessible();
 		method.setAccessible(true);
-		var property = method.getAnnotation(Property.class);
-		var parameter = method.getParameters()[0];
+		Property property = method.getAnnotation(Property.class);
+		Parameter parameter = method.getParameters()[0];
 		if (isString(parameter.getType())) {
 			method.invoke(obj, handleOptional(property, getString(property.name())));
 		} else if (isLong(parameter.getType())) {
@@ -267,7 +267,7 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 		}
 
 		public PropertyResolver build() {
-			var propertyResolver = new PropertyResolver(providers.toArray(new RefreshableProvider[0]));
+			PropertyResolver propertyResolver = new PropertyResolver(providers.toArray(new RefreshableProvider[0]));
 			propertyResolver.inspector = this.inspector;
 			propertyResolver.propertyNotFoundHandler = this.propertyNotFoundHandler;
 			propertyResolver.transformer = this.transformer;

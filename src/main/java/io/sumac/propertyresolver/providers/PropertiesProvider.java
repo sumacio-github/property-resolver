@@ -8,8 +8,8 @@ public abstract class PropertiesProvider implements Provider {
 
 	@Override
 	public Optional<Boolean> getBoolean(String key) {
-		var opt = getString(key);
-		if (opt.isEmpty()) {
+		Optional<String> opt = getString(key);
+		if (!opt.isPresent()) {
 			return Optional.empty();
 		} else {
 			return Optional.of(TypeTransformer.toBoolean(opt.get()));
@@ -18,8 +18,8 @@ public abstract class PropertiesProvider implements Provider {
 
 	@Override
 	public Optional<Integer> getInt(String key) {
-		var opt = getString(key);
-		if (opt.isEmpty()) {
+		Optional<String> opt = getString(key);
+		if (!opt.isPresent()) {
 			return Optional.empty();
 		} else {
 			return Optional.of(TypeTransformer.toInt(opt.get()));
@@ -28,8 +28,8 @@ public abstract class PropertiesProvider implements Provider {
 
 	@Override
 	public Optional<Long> getLong(String key) {
-		var opt = getString(key);
-		if (opt.isEmpty()) {
+		Optional<String> opt = getString(key);
+		if (!opt.isPresent()) {
 			return Optional.empty();
 		} else {
 			return Optional.of(TypeTransformer.toLong(opt.get()));
@@ -38,8 +38,8 @@ public abstract class PropertiesProvider implements Provider {
 
 	@Override
 	public Optional<Double> getDouble(String key) {
-		var opt = getString(key);
-		if (opt.isEmpty()) {
+		Optional<String> opt = getString(key);
+		if (!opt.isPresent()) {
 			return Optional.empty();
 		} else {
 			return Optional.of(TypeTransformer.toDouble(opt.get()));
@@ -48,8 +48,8 @@ public abstract class PropertiesProvider implements Provider {
 
 	@Override
 	public Optional<Float> getFloat(String key) {
-		var opt = getString(key);
-		if (opt.isEmpty()) {
+		Optional<String> opt = getString(key);
+		if (!opt.isPresent()) {
 			return Optional.empty();
 		} else {
 			return Optional.of(TypeTransformer.toFloat(opt.get()));

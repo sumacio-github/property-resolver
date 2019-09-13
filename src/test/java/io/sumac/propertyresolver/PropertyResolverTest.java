@@ -46,123 +46,126 @@ public class PropertyResolverTest {
 
 	@Test
 	public void toTest_fields() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var output = systemUnderTest.to(Model1.class);
+		Model1 output = systemUnderTest.to(Model1.class);
 		validate(output);
 	}
 
 	@Test
 	public void toTest_methods() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var output = systemUnderTest.to(Model2.class);
+		Model2 output = systemUnderTest.to(Model2.class);
 		validate(output);
 	}
 
 	@Test
 	public void toTest_parameters() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var output = systemUnderTest.to(Model3.class);
+		Model3 output = systemUnderTest.to(Model3.class);
 		validate(output);
 	}
 
 	@Test
 	public void fillInTest_fields() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var model = new Model1();
+		Model1 model = new Model1();
 		systemUnderTest.fillIn(model);
 		validate(model);
 	}
 
 	@Test
 	public void fillInTest_methods() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var model = new Model2();
+		Model2 model = new Model2();
 		systemUnderTest.fillIn(model);
 		validate(model);
 	}
 
 	@Test
 	public void toTest_missingFields() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var output = assertThrows(PropertyResolverException.class, () -> systemUnderTest.to(Model4.class));
+		PropertyResolverException output = assertThrows(PropertyResolverException.class,
+				() -> systemUnderTest.to(Model4.class));
 		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
 	}
 
 	@Test
 	public void toTest_missingMethods() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var output = assertThrows(PropertyResolverException.class, () -> systemUnderTest.to(Model5.class));
+		PropertyResolverException output = assertThrows(PropertyResolverException.class,
+				() -> systemUnderTest.to(Model5.class));
 		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
 	}
 
 	@Test
 	public void toTest_missingParameters() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var output = assertThrows(PropertyResolverException.class, () -> systemUnderTest.to(Model6.class));
+		PropertyResolverException output = assertThrows(PropertyResolverException.class,
+				() -> systemUnderTest.to(Model6.class));
 		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
 	}
 
 	@Test
 	public void toTest_optionalFields() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var output = systemUnderTest.to(Model7.class);
+		Model7 output = systemUnderTest.to(Model7.class);
 		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(output.getNotFoundString(), nullValue()));
 	}
 
 	@Test
 	public void toTest_optionalMethods() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var output = systemUnderTest.to(Model8.class);
+		Model8 output = systemUnderTest.to(Model8.class);
 		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(output.getNotFoundString(), nullValue()));
 	}
 
 	@Test
 	public void toTest_optionalParameters() {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		var output = systemUnderTest.to(Model9.class);
+		Model9 output = systemUnderTest.to(Model9.class);
 		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(output.getNotFoundString(), nullValue()));
 	}
 
 	@Test
 	public void serializableTest() throws FileNotFoundException, IOException, ClassNotFoundException {
-		var systemUnderTest = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
-				.useCustomInspector(customLoggingInspector)
+		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
+				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
 		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("property_resolver.bin"))) {

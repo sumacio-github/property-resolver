@@ -22,8 +22,8 @@ public abstract class CompositeProvider extends PropertiesProvider implements Re
 	@Override
 	public Optional<String> getString(String key) {
 		for (Provider provider : providers) {
-			final var value = provider.getString(key);
-			if (!value.isEmpty()) {
+			final Optional<String> value = provider.getString(key);
+			if (value.isPresent()) {
 				return value;
 			}
 		}

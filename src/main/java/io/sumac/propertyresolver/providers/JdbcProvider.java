@@ -25,7 +25,7 @@ public class JdbcProvider extends RefreshableProvider implements Serializable {
 
 	@Override
 	protected Properties fetchAll() {
-		var props = new Properties();
+		Properties props = new Properties();
 		try (final Connection connection = dataSource.getConnection();
 				final Statement statement = connection.createStatement();
 				final ResultSet resultSet = statement.executeQuery(String.format("select * from %s t", table));) {

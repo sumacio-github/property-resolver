@@ -1,6 +1,7 @@
 package io.sumac.propertyresolver.providers;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,8 +22,8 @@ public class FileProvider extends RefreshableProvider implements Serializable {
 
 	@Override
 	protected Properties fetchAll() {
-		var props = new Properties();
-		try (final var inputStream = Files.newInputStream(Paths.get(filePath))) {
+		Properties props = new Properties();
+		try (final InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
 			props.load(inputStream);
 			return props;
 		} catch (IOException e) {
