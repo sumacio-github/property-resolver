@@ -1,10 +1,7 @@
 package io.sumac.propertyresolver;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.is;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -13,16 +10,6 @@ import java.util.function.UnaryOperator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
-
-import io.sumac.propertyresolver.sample.Model1;
-import io.sumac.propertyresolver.sample.Model2;
-import io.sumac.propertyresolver.sample.Model3;
-import io.sumac.propertyresolver.sample.Model4;
-import io.sumac.propertyresolver.sample.Model5;
-import io.sumac.propertyresolver.sample.Model6;
-import io.sumac.propertyresolver.sample.Model7;
-import io.sumac.propertyresolver.sample.Model8;
-import io.sumac.propertyresolver.sample.Model9;
 
 public class PropertyResolverTest {
 
@@ -39,162 +26,94 @@ public class PropertyResolverTest {
 	private UnaryOperator<String> customToUpperCaseTransformer = s -> s.toUpperCase();
 
 	@Test
-	public void toTest_fields() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
+	public void testGetString() {
+		PropertyResolver sut = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		Model1 output = systemUnderTest.to(Model1.class);
-		validate(output);
+		assertThat(sut.getString("test.found.string").isPresent(), is(true));
+		assertThat(sut.getString("test.found.string").get(), is("HELLO WORLD"));
+		assertThat(sut.getString("test.not_found.string").isPresent(), is(false));
+		sut.refresh();
+		assertThat(sut.getString("test.found.string").isPresent(), is(true));
+		assertThat(sut.getString("test.found.string").get(), is("HELLO WORLD"));
+		assertThat(sut.getString("test.not_found.string").isPresent(), is(false));
+
 	}
 
 	@Test
-	public void toTest_methods() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
+	public void testGetBoolean() {
+		PropertyResolver sut = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		Model2 output = systemUnderTest.to(Model2.class);
-		validate(output);
+		assertThat(sut.getBoolean("test.found.boolean").isPresent(), is(true));
+		assertThat(sut.getBoolean("test.found.boolean").get(), is(true));
+		assertThat(sut.getBoolean("test.not_found.boolean").isPresent(), is(false));
+		sut.refresh();
+		assertThat(sut.getBoolean("test.found.boolean").isPresent(), is(true));
+		assertThat(sut.getBoolean("test.found.boolean").get(), is(true));
+		assertThat(sut.getBoolean("test.not_found.boolean").isPresent(), is(false));
 	}
 
 	@Test
-	public void toTest_parameters() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
+	public void testGetInt() {
+		PropertyResolver sut = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		Model3 output = systemUnderTest.to(Model3.class);
-		validate(output);
+		assertThat(sut.getInt("test.found.int").isPresent(), is(true));
+		assertThat(sut.getInt("test.found.int").get(), is(32));
+		assertThat(sut.getInt("test.not_found.int").isPresent(), is(false));
+		sut.refresh();
+		assertThat(sut.getInt("test.found.int").isPresent(), is(true));
+		assertThat(sut.getInt("test.found.int").get(), is(32));
+		assertThat(sut.getInt("test.not_found.int").isPresent(), is(false));
 	}
 
 	@Test
-	public void fillInTest_fields() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
+	public void testGetLong() {
+		PropertyResolver sut = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		Model1 model = new Model1();
-		systemUnderTest.fillIn(model);
-		validate(model);
+		assertThat(sut.getLong("test.found.long").isPresent(), is(true));
+		assertThat(sut.getLong("test.found.long").get(), is(64L));
+		assertThat(sut.getLong("test.not_found.long").isPresent(), is(false));
+		sut.refresh();
+		assertThat(sut.getLong("test.found.long").isPresent(), is(true));
+		assertThat(sut.getLong("test.found.long").get(), is(64L));
+		assertThat(sut.getLong("test.not_found.long").isPresent(), is(false));
 	}
 
 	@Test
-	public void fillInTest_methods() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
+	public void testGetFloat() {
+		PropertyResolver sut = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		Model2 model = new Model2();
-		systemUnderTest.fillIn(model);
-		validate(model);
+		assertThat(sut.getFloat("test.found.float").isPresent(), is(true));
+		assertThat(sut.getFloat("test.found.float").get(), is(1.1F));
+		assertThat(sut.getFloat("test.not_found.float").isPresent(), is(false));
+		sut.refresh();
+		assertThat(sut.getFloat("test.found.float").isPresent(), is(true));
+		assertThat(sut.getFloat("test.found.float").get(), is(1.1F));
+		assertThat(sut.getFloat("test.not_found.float").isPresent(), is(false));
 	}
 
 	@Test
-	public void toTest_missingFields() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
+	public void testGetDouble() {
+		PropertyResolver sut = PropertyResolver.registerProviders().addClasspathPropertiesFile("test.properties")
+				.useCustomInspector(customLoggingInspector)
 				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
 				.useCustomTransformer(customToUpperCaseTransformer).build();
-		PropertyResolverException output = assertThrows(PropertyResolverException.class,
-				() -> systemUnderTest.to(Model4.class));
-		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
+		assertThat(sut.getDouble("test.found.double").isPresent(), is(true));
+		assertThat(sut.getDouble("test.found.double").get(), is(2.2));
+		assertThat(sut.getDouble("test.not_found.double").isPresent(), is(false));
+		sut.refresh();
+		assertThat(sut.getDouble("test.found.double").isPresent(), is(true));
+		assertThat(sut.getDouble("test.found.double").get(), is(2.2));
+		assertThat(sut.getDouble("test.not_found.double").isPresent(), is(false));
 	}
 
-	@Test
-	public void toTest_missingMethods() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
-				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
-				.useCustomTransformer(customToUpperCaseTransformer).build();
-		PropertyResolverException output = assertThrows(PropertyResolverException.class,
-				() -> systemUnderTest.to(Model5.class));
-		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
-	}
-
-	@Test
-	public void toTest_missingParameters() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
-				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
-				.useCustomTransformer(customToUpperCaseTransformer).build();
-		PropertyResolverException output = assertThrows(PropertyResolverException.class,
-				() -> systemUnderTest.to(Model6.class));
-		assertThat(output.getMessage(), is("Property not found: 'test.not_found.string'"));
-	}
-
-	@Test
-	public void toTest_optionalFields() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
-				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
-				.useCustomTransformer(customToUpperCaseTransformer).build();
-		Model7 output = systemUnderTest.to(Model7.class);
-		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
-				() -> assertThat(output.getNotFoundString(), nullValue()));
-	}
-
-	@Test
-	public void toTest_optionalMethods() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
-				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
-				.useCustomTransformer(customToUpperCaseTransformer).build();
-		Model8 output = systemUnderTest.to(Model8.class);
-		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
-				() -> assertThat(output.getNotFoundString(), nullValue()));
-	}
-
-	@Test
-	public void toTest_optionalParameters() {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
-				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
-				.useCustomTransformer(customToUpperCaseTransformer).build();
-		Model9 output = systemUnderTest.to(Model9.class);
-		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
-				() -> assertThat(output.getNotFoundString(), nullValue()));
-	}
-
-	private void validate(Model1 model) {
-		assertAll(() -> assertThat(model.getFoundString(), is("HELLO WORLD")),
-				() -> assertThat(model.getFoundInteger(), is(32)),
-				() -> assertThat(model.getFoundIntegerPrimitive(), is(32)),
-				() -> assertThat(model.getFoundLong(), is(64L)),
-				() -> assertThat(model.getFoundLongPrimitive(), is(64L)),
-				() -> assertThat(model.getFoundDouble(), is(2.2)),
-				() -> assertThat(model.getFoundDoublePrimitive(), is(2.2)),
-				() -> assertThat(model.getFoundFloat(), is(1.1F)),
-				() -> assertThat(model.getFoundFloatPrimitive(), is(1.1F)),
-				() -> assertThat(model.getFoundBoolean(), is(true)),
-				() -> assertThat(model.getFoundBooleanPrimitive(), is(true)));
-	}
-
-	private void validate(Model2 model) {
-		assertAll(() -> assertThat(model.getFoundString(), is("HELLO WORLD")),
-				() -> assertThat(model.getFoundInteger(), is(32)),
-				() -> assertThat(model.getFoundIntegerPrimitive(), is(32)),
-				() -> assertThat(model.getFoundLong(), is(64L)),
-				() -> assertThat(model.getFoundLongPrimitive(), is(64L)),
-				() -> assertThat(model.getFoundDouble(), is(2.2)),
-				() -> assertThat(model.getFoundDoublePrimitive(), is(2.2)),
-				() -> assertThat(model.getFoundFloat(), is(1.1F)),
-				() -> assertThat(model.getFoundFloatPrimitive(), is(1.1F)),
-				() -> assertThat(model.getFoundBoolean(), is(true)),
-				() -> assertThat(model.getFoundBooleanPrimitive(), is(true)));
-	}
-
-	private void validate(Model3 model) {
-		assertAll(() -> assertThat(model.getFoundString(), is("HELLO WORLD")),
-				() -> assertThat(model.getFoundInteger(), is(32)),
-				() -> assertThat(model.getFoundIntegerPrimitive(), is(32)),
-				() -> assertThat(model.getFoundLong(), is(64L)),
-				() -> assertThat(model.getFoundLongPrimitive(), is(64L)),
-				() -> assertThat(model.getFoundDouble(), is(2.2)),
-				() -> assertThat(model.getFoundDoublePrimitive(), is(2.2)),
-				() -> assertThat(model.getFoundFloat(), is(1.1F)),
-				() -> assertThat(model.getFoundFloatPrimitive(), is(1.1F)),
-				() -> assertThat(model.getFoundBoolean(), is(true)),
-				() -> assertThat(model.getFoundBooleanPrimitive(), is(true)));
-	}
 }
