@@ -1,4 +1,4 @@
-package io.sumac.propertyresolver.providers;
+package io.sumac.propertyresolver.providers.cached.refreshable;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;

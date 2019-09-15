@@ -1,21 +1,21 @@
 package io.sumac.propertyresolver.providers;
 
-import java.io.Serializable;
 import java.util.Optional;
 
-public abstract class CompositeProvider extends PropertiesProvider implements Refreshable, Serializable {
+public abstract class CompositeProvider extends PropertiesProvider implements Refreshable {
 
-	private static final long serialVersionUID = 5107785980057380240L;
-	private RefreshableProvider[] providers;
+	private Provider[] providers;
 
-	public CompositeProvider(RefreshableProvider... providers) {
+	public CompositeProvider(Provider... providers) {
 		this.providers = providers;
 	}
 
 	@Override
 	public void refresh() {
-		for (RefreshableProvider provider : providers) {
-			provider.refresh();
+		for (Provider provider : providers) {
+			if (provider instanceof Refreshable) {
+				((Refreshable) provider).refresh();
+			}
 		}
 	}
 

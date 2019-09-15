@@ -1,8 +1,7 @@
-package io.sumac.propertyresolver.providers;
+package io.sumac.propertyresolver.providers.cached.refreshable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,9 +9,8 @@ import java.util.Properties;
 
 import io.sumac.propertyresolver.PropertyResolverException;
 
-public class FileProvider extends RefreshableProvider implements Serializable {
+public class FileProvider extends RefreshableProvider {
 
-	private static final long serialVersionUID = -9050367784611693236L;
 	private final String filePath;
 
 	public FileProvider(Path filePath) {

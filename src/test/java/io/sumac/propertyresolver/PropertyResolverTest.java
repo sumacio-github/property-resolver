@@ -6,20 +6,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
-import io.sumac.propertyresolver.functions.SerializableBiConsumer;
-import io.sumac.propertyresolver.functions.SerializableConsumer;
-import io.sumac.propertyresolver.functions.SerializableUnaryOperator;
 import io.sumac.propertyresolver.sample.Model1;
 import io.sumac.propertyresolver.sample.Model2;
 import io.sumac.propertyresolver.sample.Model3;
@@ -34,15 +28,15 @@ public class PropertyResolverTest {
 
 	private static final Logger LOGGER = LogManager.getLogger(PropertyResolverTest.class);
 
-	private SerializableBiConsumer customLoggingInspector = (key, value) -> {
+	private BiConsumer<String, String> customLoggingInspector = (key, value) -> {
 		LOGGER.debug("{}={}", key, value);
 	};
 
-	private SerializableConsumer customLoggingPropertyNotFoundHandler = key -> {
+	private Consumer<String> customLoggingPropertyNotFoundHandler = key -> {
 		LOGGER.warn("{}=<NULL>", key);
 	};
 
-	private SerializableUnaryOperator customToUpperCaseTransformer = s -> s.toUpperCase();
+	private UnaryOperator<String> customToUpperCaseTransformer = s -> s.toUpperCase();
 
 	@Test
 	public void toTest_fields() {
@@ -160,21 +154,6 @@ public class PropertyResolverTest {
 		Model9 output = systemUnderTest.to(Model9.class);
 		assertAll(() -> assertThat(output.getFoundString(), is("HELLO WORLD")),
 				() -> assertThat(output.getNotFoundString(), nullValue()));
-	}
-
-	@Test
-	public void serializableTest() throws FileNotFoundException, IOException, ClassNotFoundException {
-		PropertyResolver systemUnderTest = PropertyResolver.registerProviders()
-				.addClasspathPropertiesFile("test.properties").useCustomInspector(customLoggingInspector)
-				.useCustomPropertyNotFoundHandler(customLoggingPropertyNotFoundHandler)
-				.useCustomTransformer(customToUpperCaseTransformer).build();
-		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("property_resolver.bin"))) {
-			out.writeObject(systemUnderTest);
-		}
-		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("property_resolver.bin"))) {
-			PropertyResolver output = (PropertyResolver) in.readObject();
-			validate(output.to(Model1.class));
-		}
 	}
 
 	private void validate(Model1 model) {

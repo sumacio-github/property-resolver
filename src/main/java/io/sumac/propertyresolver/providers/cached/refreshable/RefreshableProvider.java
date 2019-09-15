@@ -1,12 +1,13 @@
-package io.sumac.propertyresolver.providers;
+package io.sumac.propertyresolver.providers.cached.refreshable;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.Properties;
 
-public abstract class RefreshableProvider extends PropertiesProvider implements Refreshable, Serializable {
+import io.sumac.propertyresolver.providers.PropertiesProvider;
+import io.sumac.propertyresolver.providers.Refreshable;
 
-	private static final long serialVersionUID = 532654152031686803L;
+public abstract class RefreshableProvider extends PropertiesProvider implements Refreshable {
+
 	private final Properties properties = new Properties();
 
 	protected abstract Properties fetchAll();

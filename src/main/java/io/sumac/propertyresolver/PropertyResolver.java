@@ -7,7 +7,6 @@ import static io.sumac.propertyresolver.TypeTransformer.isInt;
 import static io.sumac.propertyresolver.TypeTransformer.isLong;
 import static io.sumac.propertyresolver.TypeTransformer.isString;
 
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -17,30 +16,30 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import javax.sql.DataSource;
 
 import io.sumac.propertyresolver.annotations.Property;
-import io.sumac.propertyresolver.functions.SerializableBiConsumer;
-import io.sumac.propertyresolver.functions.SerializableConsumer;
-import io.sumac.propertyresolver.functions.SerializableUnaryOperator;
-import io.sumac.propertyresolver.providers.ClassPathResourceProvider;
 import io.sumac.propertyresolver.providers.CompositeProvider;
-import io.sumac.propertyresolver.providers.FileProvider;
-import io.sumac.propertyresolver.providers.JdbcProvider;
-import io.sumac.propertyresolver.providers.RefreshableProvider;
-import io.sumac.propertyresolver.providers.SystemArgumentProvider;
+import io.sumac.propertyresolver.providers.Provider;
+import io.sumac.propertyresolver.providers.cached.ClassPathResourceProvider;
+import io.sumac.propertyresolver.providers.cached.SystemArgumentProvider;
+import io.sumac.propertyresolver.providers.cached.refreshable.FileProvider;
+import io.sumac.propertyresolver.providers.cached.refreshable.LambdaProvider;
 
-public class PropertyResolver extends CompositeProvider implements Serializable {
+public class PropertyResolver extends CompositeProvider {
 
-	private static final long serialVersionUID = -5491745026934786712L;
+	private BiConsumer<String, String> inspector;
+	private Consumer<String> propertyNotFoundHandler;
 
-	private SerializableBiConsumer inspector;
-	private SerializableConsumer propertyNotFoundHandler;
+	private UnaryOperator<String> transformer;
 
-	private SerializableUnaryOperator transformer;
-
-	private PropertyResolver(RefreshableProvider... providers) {
+	private PropertyResolver(Provider... providers) {
 		super(providers);
 	}
 
@@ -217,14 +216,14 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 	}
 
 	public static class PropertyResolverBuilder {
-		final List<RefreshableProvider> providers = new ArrayList<>();
+		final List<Provider> providers = new ArrayList<>();
 
-		private SerializableBiConsumer inspector = (key, value) -> {
+		private BiConsumer<String, String> inspector = (key, value) -> {
 		};
-		private SerializableConsumer propertyNotFoundHandler = key -> {
+		private Consumer<String> propertyNotFoundHandler = key -> {
 		};
 
-		private SerializableUnaryOperator transformer = value -> value;
+		private UnaryOperator<String> transformer = value -> value;
 
 		private PropertyResolverBuilder() {
 
@@ -246,28 +245,44 @@ public class PropertyResolver extends CompositeProvider implements Serializable 
 		}
 
 		public PropertyResolverBuilder addJdbcTable(DataSource source, String table) {
-			providers.add(new JdbcProvider(source, table));
+			providers.add(new io.sumac.propertyresolver.providers.cached.refreshable.JdbcProvider(source, table));
 			return this;
 		}
 
-		public PropertyResolverBuilder useCustomInspector(SerializableBiConsumer customInspector) {
+		public PropertyResolverBuilder addJdbcLookup(DataSource source, String table, String keyColumnName,
+				String valueColumnName) {
+			providers.add(new io.sumac.propertyresolver.providers.dynamic.JdbcProvider(source, table, keyColumnName,
+					valueColumnName));
+			return this;
+		}
+
+		public PropertyResolverBuilder useCustomInspector(BiConsumer<String, String> customInspector) {
 			this.inspector = customInspector;
 			return this;
 		}
 
 		public PropertyResolverBuilder useCustomPropertyNotFoundHandler(
-				SerializableConsumer customPropertyNotFoundHandler) {
+				Consumer<String> customPropertyNotFoundHandler) {
 			this.propertyNotFoundHandler = customPropertyNotFoundHandler;
 			return this;
 		}
 
-		public PropertyResolverBuilder useCustomTransformer(SerializableUnaryOperator customTransformer) {
+		public PropertyResolverBuilder useCustomTransformer(UnaryOperator<String> customTransformer) {
 			this.transformer = customTransformer;
 			return this;
 		}
 
+		public PropertyResolverBuilder useCustomResolver(Supplier<Properties> supplier) {
+			this.providers.add(new LambdaProvider(supplier));
+			return this;
+		}
+
+		public PropertyResolverBuilder useProperties(Properties properties) {
+			return useCustomResolver(() -> properties);
+		}
+
 		public PropertyResolver build() {
-			PropertyResolver propertyResolver = new PropertyResolver(providers.toArray(new RefreshableProvider[0]));
+			PropertyResolver propertyResolver = new PropertyResolver(providers.toArray(new Provider[0]));
 			propertyResolver.inspector = this.inspector;
 			propertyResolver.propertyNotFoundHandler = this.propertyNotFoundHandler;
 			propertyResolver.transformer = this.transformer;
