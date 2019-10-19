@@ -5,11 +5,12 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 
 import io.sumac.propertyresolver.PropertyResolverException;
 import io.sumac.propertyresolver.providers.PropertiesProvider;
 
-public class ClassPathResourceProvider extends PropertiesProvider {
+public class ClassPathResourceProvider extends CachedPropertiesProvider {
 
 	private final Properties properties;
 
@@ -29,6 +30,11 @@ public class ClassPathResourceProvider extends PropertiesProvider {
 	@Override
 	public Optional<String> getString(String key) {
 		return Optional.ofNullable(properties.getProperty(key));
+	}
+
+	@Override
+	public Set<String> getPropertyNames() {
+		return properties.stringPropertyNames();
 	}
 
 }

@@ -2,10 +2,9 @@ package io.sumac.propertyresolver.providers.cached;
 
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 
-import io.sumac.propertyresolver.providers.PropertiesProvider;
-
-public class SystemArgumentProvider extends PropertiesProvider {
+public class SystemArgumentProvider extends CachedPropertiesProvider {
 
 	private final Properties properties;
 
@@ -16,6 +15,11 @@ public class SystemArgumentProvider extends PropertiesProvider {
 	@Override
 	public Optional<String> getString(String key) {
 		return Optional.ofNullable(properties.getProperty(key));
+	}
+
+	@Override
+	public Set<String> getPropertyNames() {
+		return properties.stringPropertyNames();
 	}
 
 }
