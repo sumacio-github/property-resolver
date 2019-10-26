@@ -2,126 +2,86 @@ package io.sumac.propertyresolver;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import javax.sql.DataSource;
+public final class PropertyResolver {
+	private final List<EnhancedProperties> propertiesBuffer = new ArrayList<>();
+	private boolean debug = false;
+	private boolean reversePriority = false;
 
-import io.sumac.propertyresolver.providers.CompositeProvider;
-import io.sumac.propertyresolver.providers.Provider;
-import io.sumac.propertyresolver.providers.cached.ClassPathResourceProvider;
-import io.sumac.propertyresolver.providers.cached.SystemArgumentProvider;
-import io.sumac.propertyresolver.providers.cached.refreshable.FileProvider;
-import io.sumac.propertyresolver.providers.cached.refreshable.LambdaProvider;
+	private PropertyResolver() {
 
-public class PropertyResolver extends CompositeProvider {
-
-	private BiConsumer<String, String> inspector;
-	private Consumer<String> propertyNotFoundHandler;
-
-	private UnaryOperator<String> transformer;
-
-	private PropertyResolver(Provider... providers) {
-		super(providers);
 	}
 
-	public static PropertyResolverBuilder registerProviders() {
-		return new PropertyResolverBuilder();
+	public static PropertyResolver register() {
+		return new PropertyResolver();
 	}
 
-	@Override
-	public Optional<String> getString(String key) {
-		Optional<String> value = super.getString(key);
-		if (!value.isPresent()) {
-			this.propertyNotFoundHandler.accept(key);
-			return value;
-		} else {
-			return value.map(v -> {
-				String transformedValue = transformer.apply(v);
-				this.inspector.accept(key, transformedValue);
-				return transformedValue;
-			});
-		}
+	public PropertyResolver fromFile(Path filePath) {
+		propertiesBuffer.add(PropertyResolverUtils.toProperties(filePath));
+		return this;
 	}
 
-	public static class PropertyResolverBuilder {
-		final List<Provider> providers = new ArrayList<>();
-
-		private BiConsumer<String, String> inspector = (key, value) -> {
-		};
-		private Consumer<String> propertyNotFoundHandler = key -> {
-		};
-
-		private UnaryOperator<String> transformer = value -> value;
-
-		private PropertyResolverBuilder() {
-
-		}
-
-		public PropertyResolverBuilder addSystemArguments() {
-			providers.add(new SystemArgumentProvider());
-			return this;
-		}
-
-		public PropertyResolverBuilder addClasspathPropertiesFile(String resource) {
-			providers.add(new ClassPathResourceProvider(resource));
-			return this;
-		}
-
-		public PropertyResolverBuilder addPropertiesFile(Path path) {
-			providers.add(new FileProvider(path));
-			return this;
-		}
-
-		public PropertyResolverBuilder addJdbcTable(DataSource source, String table) {
-			providers.add(new io.sumac.propertyresolver.providers.cached.refreshable.JdbcProvider(source, table));
-			return this;
-		}
-
-		public PropertyResolverBuilder addJdbcLookup(DataSource source, String table, String keyColumnName,
-				String valueColumnName) {
-			providers.add(new io.sumac.propertyresolver.providers.dynamic.JdbcProvider(source, table, keyColumnName,
-					valueColumnName));
-			return this;
-		}
-
-		public PropertyResolverBuilder useCustomInspector(BiConsumer<String, String> customInspector) {
-			this.inspector = customInspector;
-			return this;
-		}
-
-		public PropertyResolverBuilder useCustomPropertyNotFoundHandler(
-				Consumer<String> customPropertyNotFoundHandler) {
-			this.propertyNotFoundHandler = customPropertyNotFoundHandler;
-			return this;
-		}
-
-		public PropertyResolverBuilder useCustomTransformer(UnaryOperator<String> customTransformer) {
-			this.transformer = customTransformer;
-			return this;
-		}
-
-		public PropertyResolverBuilder useCustomResolver(Supplier<Properties> supplier) {
-			this.providers.add(new LambdaProvider(supplier));
-			return this;
-		}
-
-		public PropertyResolverBuilder useProperties(Properties properties) {
-			return useCustomResolver(() -> properties);
-		}
-
-		public PropertyResolver build() {
-			PropertyResolver propertyResolver = new PropertyResolver(providers.toArray(new Provider[0]));
-			propertyResolver.inspector = this.inspector;
-			propertyResolver.propertyNotFoundHandler = this.propertyNotFoundHandler;
-			propertyResolver.transformer = this.transformer;
-			return propertyResolver;
-		}
+	public PropertyResolver fromClassPath(String fileName) {
+		propertiesBuffer.add(PropertyResolverUtils.toProperties(fileName));
+		return this;
 	}
 
+	public PropertyResolver property(String key, String value) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(key, value);
+		return properties(map);
+	}
+
+	public PropertyResolver properties(Map<String, String> properties) {
+		propertiesBuffer.add(PropertyResolverUtils.toProperties(properties));
+		return this;
+	}
+
+	public PropertyResolver reversePriority() {
+		this.reversePriority = !this.reversePriority;
+		return this;
+	}
+
+	public PropertyResolver debug(boolean debug) {
+		this.debug = debug;
+		return this;
+	}
+
+	public EnhancedProperties build() {
+		List<EnhancedProperties> localProperties = getOrderedByPriority();
+		EnhancedProperties output = new EnhancedProperties();
+		localProperties.forEach(output::putAll);
+		if (debug) {
+			show(output);
+		}
+		return output;
+	}
+
+	private List<EnhancedProperties> getOrderedByPriority() {
+		List<EnhancedProperties> copy = new ArrayList<>(propertiesBuffer);
+		if (reversePriority) {
+			Collections.reverse(copy);
+		}
+		return copy;
+	}
+
+	private void show(EnhancedProperties properties) {
+		List<String> keys = properties.keySet().stream().map(Object::toString).collect(Collectors.toList());
+		Collections.sort(keys);
+		StringBuilder builder = new StringBuilder();
+		keys.forEach(key -> {
+			if (properties.getString(key).isPresent()) {
+				builder.append(key).append(" = ").append(properties.getString(key).get());
+			} else {
+				builder.append(key).append(" = NULL");
+			}
+			builder.append("\n");
+		});
+		System.out.println(builder.toString());
+	}
 }

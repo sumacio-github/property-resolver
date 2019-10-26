@@ -19,12 +19,22 @@ public abstract class PropertyResolverException extends RuntimeException {
 		return new PropertySourceNotFoundException("File not found on classpath: '" + propertiesFile + "'", e);
 	}
 
-	public static PropertyResolverException errorReadingClasspathPropertyFile(String propertiesFile) {
-		return new PropertySourceNotFoundException("File not found on classpath: '" + propertiesFile + "'");
+	public static PropertyResolverException errorReadingClasspathPropertyFile(String propertiesFile,
+			PropertyResolverException e) {
+		return new PropertySourceNotFoundException("File not found on classpath: '" + propertiesFile + "'", e);
 	}
 
 	public static PropertyResolverException errorReadingPropertyFile(String propertiesFile, IOException e) {
 		return new PropertySourceNotFoundException("File not read: '" + propertiesFile + "'", e);
+	}
+
+	public static PropertyResolverException errorReadingPropertyFile(String propertiesFile,
+			PropertyResolverException e) {
+		return new PropertySourceNotFoundException("File not read: '" + propertiesFile + "'", e);
+	}
+
+	public static PropertyResolverException errorReadingInputStream(IOException e) {
+		return new PropertySourceNotFoundException("InputStream error", e);
 	}
 
 	public static PropertyResolverException sqlError(SQLException e) {
