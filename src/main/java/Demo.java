@@ -1,6 +1,7 @@
-package io.sumac.propertyresolver;
 
 import java.nio.file.Paths;
+
+import io.sumac.propertyresolver.PropertyResolver;
 
 public class Demo {
 

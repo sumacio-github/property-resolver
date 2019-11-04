@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class PropertyResolver {
+public class PropertyResolver {
 	private final List<EnhancedProperties> propertiesBuffer = new ArrayList<>();
 	private boolean debug = false;
 	private boolean reversePriority = false;
