@@ -62,11 +62,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.sumac</groupId>
-			<artifactId>sumac-annotations</artifactId>
-			<version>${sumac-annotations.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${fasterxml.version}</version>

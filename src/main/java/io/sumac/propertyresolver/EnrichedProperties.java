@@ -17,8 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
-import io.sumac.annotations.documentation.NonNull;
-
 /**
  * Extension of {@code java.util.Properties} that adds some additional
  * convenience methods.
@@ -59,7 +57,6 @@ public class EnrichedProperties extends Properties {
 	 * @param key the property key
 	 * @return Optional of String if found or Optional.empty() if not found
 	 */
-	@NonNull
 	public Optional<String> getString(String key) {
 		if (this.containsKey(key)) {
 			return Optional.of(decryptor.apply(this.getProperty(key)));
@@ -75,7 +72,6 @@ public class EnrichedProperties extends Properties {
 	 * @param key the property key
 	 * @return Optional of Boolean if found or Optional.empty() if not found
 	 */
-	@NonNull
 	public Optional<Boolean> getBoolean(String key) {
 		Optional<String> opt = getString(key);
 		if (!opt.isPresent()) {
@@ -92,7 +88,6 @@ public class EnrichedProperties extends Properties {
 	 * @param key the property key
 	 * @return Optional of Integer if found or Optional.empty() if not found
 	 */
-	@NonNull
 	public Optional<Integer> getInt(String key) {
 		Optional<String> opt = getString(key);
 		if (!opt.isPresent()) {
@@ -109,7 +104,6 @@ public class EnrichedProperties extends Properties {
 	 * @param key the property key
 	 * @return Optional of Long if found or Optional.empty() if not found
 	 */
-	@NonNull
 	public Optional<Long> getLong(String key) {
 		Optional<String> opt = getString(key);
 		if (!opt.isPresent()) {
@@ -126,7 +120,6 @@ public class EnrichedProperties extends Properties {
 	 * @param key the property key
 	 * @return Optional of Double if found or Optional.empty() if not found
 	 */
-	@NonNull
 	public Optional<Double> getDouble(String key) {
 		Optional<String> opt = getString(key);
 		if (!opt.isPresent()) {
@@ -143,7 +136,6 @@ public class EnrichedProperties extends Properties {
 	 * @param key the property key
 	 * @return Optional of Float if found or Optional.empty() if not found
 	 */
-	@NonNull
 	public Optional<Float> getFloat(String key) {
 		Optional<String> opt = getString(key);
 		if (!opt.isPresent()) {
@@ -161,12 +153,10 @@ public class EnrichedProperties extends Properties {
 	 * @throws JsonProcessingException
 	 * @throws IOException
 	 */
-	@NonNull
 	public String toYamlString() throws JsonProcessingException, IOException {
 		return YAML_MAPPER.writeValueAsString(toJsonNode());
 	}
 
-	@NonNull
 	public String toJsonString() throws JsonProcessingException, IOException {
 		return toJsonString(false);
 	}
@@ -177,7 +167,7 @@ public class EnrichedProperties extends Properties {
 	 * @throws JsonProcessingException
 	 * @throws IOException
 	 */
-	public @NonNull String toJsonString(boolean pretty) throws JsonProcessingException, IOException {
+	public String toJsonString(boolean pretty) throws JsonProcessingException, IOException {
 		if (pretty) {
 			return JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(toJsonNode());
 		} else {
@@ -185,7 +175,6 @@ public class EnrichedProperties extends Properties {
 		}
 	}
 
-	@NonNull
 	public String toPropertiesString() throws JsonProcessingException, IOException {
 		boolean first = true;
 		StringBuilder builder = new StringBuilder();
@@ -234,11 +223,10 @@ public class EnrichedProperties extends Properties {
 		this.putAll(System.getenv());
 	}
 
-	public void setDecryptor(@NonNull Function<String, String> decryptor) {
+	public void setDecryptor(Function<String, String> decryptor) {
 		this.decryptor = decryptor;
 	}
 
-	@NonNull
 	public EnrichedProperties filterByRegex(String regex) {
 		Pattern pattern = Pattern.compile(regex);
 		EnrichedProperties result = new EnrichedProperties();
@@ -251,7 +239,6 @@ public class EnrichedProperties extends Properties {
 		return result;
 	}
 
-	@NonNull
 	public EnrichedProperties getChildProperties(String parentPropertyKey) {
 		EnrichedProperties result = new EnrichedProperties();
 		this.forEach((k, v) -> {
