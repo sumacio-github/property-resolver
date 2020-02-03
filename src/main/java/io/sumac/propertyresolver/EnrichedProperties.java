@@ -1,8 +1,11 @@
 package io.sumac.propertyresolver;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,33 +34,31 @@ public class EnrichedProperties extends Properties {
 	private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 	private static final YAMLMapper YAML_MAPPER = new YAMLMapper();
 	private static final JavaPropsMapper PROPS_MAPPER = new JavaPropsMapper();
+	private final Environment environment = new Environment(this);
 
 	private Function<String, String> decryptor = (s) -> s; // placeholder
 
-	/**
-	 * Create an empty property list
-	 */
 	public EnrichedProperties() {
 		super();
 	}
 
-	/**
-	 * Create a property list with the provided defaults
-	 * 
-	 * @param properties default properties
-	 */
 	public EnrichedProperties(Properties properties) {
 		super(properties);
 	}
 
-	/**
-	 * Same as {@link java.util.Properties#getProperty(String)} except the result is
-	 * optionally returned as a {@code String}
-	 * 
-	 * @param key the property key
-	 * @return Optional of String if found or Optional.empty() if not found
-	 */
-	public Optional<String> getString(String key) {
+	public Environment getEnvironment() {
+		return this.environment;
+	}
+
+	public String getString(String key) {
+		if (this.containsKey(key)) {
+			return decryptor.apply(this.getProperty(key));
+		} else {
+			return null;
+		}
+	}
+
+	public Optional<String> getStringOptional(String key) {
 		if (this.containsKey(key)) {
 			return Optional.of(decryptor.apply(this.getProperty(key)));
 		} else {
@@ -65,94 +66,228 @@ public class EnrichedProperties extends Properties {
 		}
 	}
 
-	/**
-	 * Same as {@link java.util.Properties#getProperty(String)} except the result is
-	 * optionally returned as a {@code Boolean}
-	 * 
-	 * @param key the property key
-	 * @return Optional of Boolean if found or Optional.empty() if not found
-	 */
-	public Optional<Boolean> getBoolean(String key) {
-		Optional<String> opt = getString(key);
-		if (!opt.isPresent()) {
-			return Optional.empty();
+	public String getStringRequired(String key) {
+		rejectIfRequiredKeyNotFound(key);
+		return decryptor.apply(this.getProperty(key));
+	}
+
+	public String[] getStrings(String key, String splitter) {
+		if (this.containsKey(key)) {
+			return decryptor.apply(this.getProperty(key)).split(splitter);
 		} else {
-			return Optional.of(toBoolean(opt.get()));
+			return new String[0];
 		}
 	}
 
-	/**
-	 * Same as {@link java.util.Properties#getProperty(String)} except the result is
-	 * optionally returned as an {@code Integer}
-	 * 
-	 * @param key the property key
-	 * @return Optional of Integer if found or Optional.empty() if not found
-	 */
-	public Optional<Integer> getInt(String key) {
-		Optional<String> opt = getString(key);
-		if (!opt.isPresent()) {
-			return Optional.empty();
+	public String[] getStringsRequired(String key, String splitter) {
+		rejectIfRequiredKeyNotFound(key);
+		return decryptor.apply(this.getProperty(key)).split(splitter);
+	}
+
+	public Boolean getBoolean(String key) {
+		if (this.containsKey(key)) {
+			return toBoolean(decryptor.apply(this.getProperty(key)));
 		} else {
-			return Optional.of(toInt(opt.get()));
+			return null;
 		}
 	}
 
-	/**
-	 * Same as {@link java.util.Properties#getProperty(String)} except the result is
-	 * optionally returned as a {@code Long}
-	 * 
-	 * @param key the property key
-	 * @return Optional of Long if found or Optional.empty() if not found
-	 */
-	public Optional<Long> getLong(String key) {
-		Optional<String> opt = getString(key);
-		if (!opt.isPresent()) {
-			return Optional.empty();
+	public Optional<Boolean> getBooleanOptional(String key) {
+		if (this.containsKey(key)) {
+			return Optional.of(toBoolean(decryptor.apply(this.getProperty(key))));
 		} else {
-			return Optional.of(toLong(opt.get()));
+			return Optional.empty();
 		}
 	}
 
-	/**
-	 * Same as {@link java.util.Properties#getProperty(String)} except the result is
-	 * optionally returned as a {@code Double}
-	 * 
-	 * @param key the property key
-	 * @return Optional of Double if found or Optional.empty() if not found
-	 */
-	public Optional<Double> getDouble(String key) {
-		Optional<String> opt = getString(key);
-		if (!opt.isPresent()) {
-			return Optional.empty();
+	public boolean getBooleanRequired(String key) {
+		rejectIfRequiredKeyNotFound(key);
+		return toBoolean(decryptor.apply(this.getProperty(key)));
+	}
+
+	public boolean[] getBooleans(String key, String splitter) {
+		if (this.containsKey(key)) {
+			return toBooleans(decryptor.apply(this.getProperty(key)).split(splitter));
 		} else {
-			return Optional.of(toDouble(opt.get()));
+			return new boolean[0];
 		}
 	}
 
-	/**
-	 * Same as {@link java.util.Properties#getProperty(String)} except the result is
-	 * optionally returned as a {@code Float}
-	 * 
-	 * @param key the property key
-	 * @return Optional of Float if found or Optional.empty() if not found
-	 */
-	public Optional<Float> getFloat(String key) {
-		Optional<String> opt = getString(key);
-		if (!opt.isPresent()) {
-			return Optional.empty();
+	public boolean[] getBooleansRequired(String key, String splitter) {
+		rejectIfRequiredKeyNotFound(key);
+		return toBooleans(decryptor.apply(this.getProperty(key)).split(splitter));
+	}
+
+	public Integer getInt(String key) {
+		if (this.containsKey(key)) {
+			return toInt(decryptor.apply(this.getProperty(key)));
 		} else {
-			return Optional.of(toFloat(opt.get()));
+			return null;
 		}
 	}
 
-	/**
-	 * This is a specialized toString method that returns a string representation of
-	 * this object formatted as a yaml file
-	 * 
-	 * @return a yaml formatted string representation of this object
-	 * @throws JsonProcessingException
-	 * @throws IOException
-	 */
+	public Optional<Integer> getIntOptional(String key) {
+		if (this.containsKey(key)) {
+			return Optional.of(toInt(decryptor.apply(this.getProperty(key))));
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	public int getIntRequired(String key) {
+		rejectIfRequiredKeyNotFound(key);
+		return toInt(decryptor.apply(this.getProperty(key)));
+	}
+
+	public int[] getInts(String key, String splitter) {
+		if (this.containsKey(key)) {
+			return toInts(decryptor.apply(this.getProperty(key)).split(splitter));
+		} else {
+			return new int[0];
+		}
+	}
+
+	public int[] getIntsRequired(String key, String splitter) {
+		rejectIfRequiredKeyNotFound(key);
+		return toInts(decryptor.apply(this.getProperty(key)).split(splitter));
+	}
+
+	public Long getLong(String key) {
+		if (this.containsKey(key)) {
+			return toLong(decryptor.apply(this.getProperty(key)));
+		} else {
+			return null;
+		}
+	}
+
+	public Optional<Long> getLongOptional(String key) {
+		if (this.containsKey(key)) {
+			return Optional.of(toLong(decryptor.apply(this.getProperty(key))));
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	public long getLongRequired(String key) {
+		rejectIfRequiredKeyNotFound(key);
+		return toLong(decryptor.apply(this.getProperty(key)));
+	}
+
+	public long[] getLongs(String key, String splitter) {
+		if (this.containsKey(key)) {
+			return toLongs(decryptor.apply(this.getProperty(key)).split(splitter));
+		} else {
+			return new long[0];
+		}
+	}
+
+	public long[] getLongsRequired(String key, String splitter) {
+		rejectIfRequiredKeyNotFound(key);
+		return toLongs(decryptor.apply(this.getProperty(key)).split(splitter));
+	}
+
+	public Double getDouble(String key) {
+		if (this.containsKey(key)) {
+			return toDouble(decryptor.apply(this.getProperty(key)));
+		} else {
+			return null;
+		}
+	}
+
+	public Optional<Double> getDoubleOptional(String key) {
+		if (this.containsKey(key)) {
+			return Optional.of(toDouble(decryptor.apply(this.getProperty(key))));
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	public double getDoubleRequired(String key) {
+		rejectIfRequiredKeyNotFound(key);
+		return toDouble(decryptor.apply(this.getProperty(key)));
+	}
+
+	public double[] getDoubles(String key, String splitter) {
+		if (this.containsKey(key)) {
+			return toDoubles(decryptor.apply(this.getProperty(key)).split(splitter));
+		} else {
+			return new double[0];
+		}
+	}
+
+	public double[] getDoublesRequired(String key, String splitter) {
+		rejectIfRequiredKeyNotFound(key);
+		return toDoubles(decryptor.apply(this.getProperty(key)).split(splitter));
+	}
+
+	public Float getFloat(String key) {
+		if (this.containsKey(key)) {
+			return toFloat(decryptor.apply(this.getProperty(key)));
+		} else {
+			return null;
+		}
+	}
+
+	public Optional<Float> getFloatOptional(String key) {
+		if (this.containsKey(key)) {
+			return Optional.of(toFloat(decryptor.apply(this.getProperty(key))));
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	public float getFloatRequired(String key) {
+		rejectIfRequiredKeyNotFound(key);
+		return toFloat(decryptor.apply(this.getProperty(key)));
+	}
+
+	public float[] getFloats(String key, String splitter) {
+		if (this.containsKey(key)) {
+			return toFloats(decryptor.apply(this.getProperty(key)).split(splitter));
+		} else {
+			return new float[0];
+		}
+	}
+
+	public float[] getFloatsRequired(String key, String splitter) {
+		rejectIfRequiredKeyNotFound(key);
+		return toFloats(decryptor.apply(this.getProperty(key)).split(splitter));
+	}
+
+	public Date getDate(String key, String pattern) {
+		if (this.containsKey(key)) {
+			return toDate(decryptor.apply(this.getProperty(key)), pattern);
+		} else {
+			return null;
+		}
+	}
+
+	public Optional<Date> getDateOptional(String key, String pattern) {
+		if (this.containsKey(key)) {
+			return Optional.of(toDate(decryptor.apply(this.getProperty(key)), pattern));
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	public Date getDateRequired(String key, String pattern) {
+		rejectIfRequiredKeyNotFound(key);
+		return toDate(decryptor.apply(this.getProperty(key)), pattern);
+	}
+
+	public Date[] getDates(String key, String splitter, String pattern) {
+		if (this.containsKey(key)) {
+			return toDates(decryptor.apply(this.getProperty(key)).split(splitter), pattern);
+		} else {
+			return new Date[0];
+		}
+	}
+
+	public Date[] getDatesRequired(String key, String splitter, String pattern) {
+		rejectIfRequiredKeyNotFound(key);
+		return toDates(decryptor.apply(this.getProperty(key)).split(splitter), pattern);
+	}
+
 	public String toYamlString() throws JsonProcessingException, IOException {
 		return YAML_MAPPER.writeValueAsString(toJsonNode());
 	}
@@ -161,12 +296,6 @@ public class EnrichedProperties extends Properties {
 		return toJsonString(false);
 	}
 
-	/**
-	 * @param pretty
-	 * @return
-	 * @throws JsonProcessingException
-	 * @throws IOException
-	 */
 	public String toJsonString(boolean pretty) throws JsonProcessingException, IOException {
 		if (pretty) {
 			return JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(toJsonNode());
@@ -175,7 +304,7 @@ public class EnrichedProperties extends Properties {
 		}
 	}
 
-	public String toPropertiesString() throws JsonProcessingException, IOException {
+	public String toPropertiesString() {
 		boolean first = true;
 		StringBuilder builder = new StringBuilder();
 		List<String> keys = new ArrayList<>(this.stringPropertyNames());
@@ -216,11 +345,22 @@ public class EnrichedProperties extends Properties {
 	}
 
 	public void loadFromSystemArgsIfAbsent() {
-		this.putAll(System.getProperties());
+		putAllIfAbsent(System.getProperties());
 	}
 
 	public void loadFromEnvIfAbsent() {
-		this.putAll(System.getenv());
+		Properties env = new Properties();
+		env.putAll(System.getenv());
+		putAllIfAbsent(env);
+	}
+
+	public void putAllIfAbsent(Properties props) {
+		props.forEach((k, v) -> {
+			if (!this.contains(k)) {
+				this.put(k, v);
+			}
+		});
+		this.putAll(props);
 	}
 
 	public void setDecryptor(Function<String, String> decryptor) {
@@ -249,9 +389,24 @@ public class EnrichedProperties extends Properties {
 		return result;
 	}
 
+	private void rejectIfRequiredKeyNotFound(String key) {
+		if (!this.contains(key)) {
+			throw PropertyResolverException.propertyNotFound(key);
+		}
+	}
+
 	private static int toInt(String value) {
 		rejectIfNull(value);
 		return Integer.valueOf(value);
+	}
+
+	private static int[] toInts(String[] values) {
+		rejectIfNull(values);
+		int[] output = new int[values.length];
+		for (int i = 0; i < values.length; i++) {
+			output[i] = toInt(values[i]);
+		}
+		return output;
 	}
 
 	private static long toLong(String value) {
@@ -259,9 +414,27 @@ public class EnrichedProperties extends Properties {
 		return Long.valueOf(value);
 	}
 
+	private static long[] toLongs(String[] values) {
+		rejectIfNull(values);
+		long[] output = new long[values.length];
+		for (int i = 0; i < values.length; i++) {
+			output[i] = toLong(values[i]);
+		}
+		return output;
+	}
+
 	private static double toDouble(String value) {
 		rejectIfNull(value);
 		return Double.valueOf(value);
+	}
+
+	private static double[] toDoubles(String[] values) {
+		rejectIfNull(values);
+		double[] output = new double[values.length];
+		for (int i = 0; i < values.length; i++) {
+			output[i] = toDouble(values[i]);
+		}
+		return output;
 	}
 
 	private static float toFloat(String value) {
@@ -269,14 +442,103 @@ public class EnrichedProperties extends Properties {
 		return Float.valueOf(value);
 	}
 
+	private static float[] toFloats(String[] values) {
+		rejectIfNull(values);
+		float[] output = new float[values.length];
+		for (int i = 0; i < values.length; i++) {
+			output[i] = toFloat(values[i]);
+		}
+		return output;
+	}
+
 	private static boolean toBoolean(String value) {
 		rejectIfNull(value);
 		return Boolean.valueOf(value);
 	}
 
+	private static boolean[] toBooleans(String[] values) {
+		rejectIfNull(values);
+		boolean[] output = new boolean[values.length];
+		for (int i = 0; i < values.length; i++) {
+			output[i] = toBoolean(values[i]);
+		}
+		return output;
+	}
+
+	private static Date toDate(String value, String pattern) {
+		rejectIfNull(pattern);
+		rejectIfNull(value);
+		return Date.from(ZonedDateTime.parse(value, DateTimeFormatter.ofPattern(pattern)).toInstant());
+	}
+
+	private static Date[] toDates(String[] values, String pattern) {
+		rejectIfNull(values);
+		Date[] output = new Date[values.length];
+		for (int i = 0; i < values.length; i++) {
+			output[i] = toDate(values[i], pattern);
+		}
+		return output;
+	}
+
 	private static void rejectIfNull(Object value) {
 		if (Objects.isNull(value)) {
 			throw new NullPointerException();
+		}
+	}
+
+	public static class Environment {
+
+		private static final String DEFAULT_APP_NAME_KEY = "environment.appName";
+		private static final String DEFAULT_ACTIVE_PROFILE_KEY = "environment.activeProfile";
+		private static final String DEFAULT_APP_VERSION_KEY = "environment.appVersion";
+
+		private String appNameKey = DEFAULT_APP_NAME_KEY;
+		private String activeProfileKey = DEFAULT_ACTIVE_PROFILE_KEY;
+		private String appVersionKey = DEFAULT_APP_VERSION_KEY;
+
+		private final EnrichedProperties properties;
+
+		private Environment(EnrichedProperties properties) {
+			this.properties = properties;
+		}
+
+		public String getAppNameKey() {
+			return appNameKey;
+		}
+
+		public String getActiveProfileKey() {
+			return activeProfileKey;
+		}
+
+		public String getAppVersionKey() {
+			return appVersionKey;
+		}
+
+		public void setAppNameKey(String appNameKey) {
+			rejectIfNull(appNameKey);
+			this.appNameKey = appNameKey;
+		}
+
+		public void setActiveProfileKey(String activeProfileKey) {
+			rejectIfNull(activeProfileKey);
+			this.activeProfileKey = activeProfileKey;
+		}
+
+		public void setAppVersionKey(String appVersionKey) {
+			rejectIfNull(appVersionKey);
+			this.appVersionKey = appVersionKey;
+		}
+
+		public String getAppName() {
+			return properties.getStringRequired(appNameKey);
+		}
+
+		public String getActiveProfile() {
+			return properties.getStringRequired(activeProfileKey);
+		}
+
+		public String getAppVersion() {
+			return properties.getStringRequired(appVersionKey);
 		}
 	}
 
