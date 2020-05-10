@@ -3,11 +3,10 @@ package io.sumac.propertyresolver;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -147,8 +146,17 @@ public class EnrichedProperties extends Properties {
 		loadFromJsonNode(YAML_MAPPER.readTree(input));
 	}
 
-	public void loadFromXmlString(String input) throws IOException {
-		loadFromJsonNode(XML_MAPPER.readTree(input));
+	public void loadFromObject(Object input) throws IOException {
+		loadFromJsonNode(JSON_MAPPER.valueToTree(input));
+	}
+
+	public void loadFromXmlString(String input, Class<?> schema) throws IOException {
+		loadFromObject(XML_MAPPER.readValue(input, schema));
+	}
+
+	public void show() {
+		TreeSet<String> sortedKeys = new TreeSet<>(this.stringPropertyNames());
+		sortedKeys.forEach(k -> System.out.println(k + "=" + this.getProperty(k)));
 	}
 
 	public void loadFromSystemArgs() {
@@ -169,13 +177,20 @@ public class EnrichedProperties extends Properties {
 		putAllIfAbsent(env);
 	}
 
+	public void loadFromSource(Supplier<Properties> source) {
+		this.putAll(source.get());
+	}
+
+	public static EnrichedProperties toEnriched(Properties props) {
+		return new EnrichedProperties(props);
+	}
+
 	public void putAllIfAbsent(Properties props) {
 		props.forEach((k, v) -> {
 			if (!this.contains(k)) {
 				this.put(k, v);
 			}
 		});
-		this.putAll(props);
 	}
 
 	public void setDecryptor(Function<String, String> decryptor) {
@@ -188,6 +203,16 @@ public class EnrichedProperties extends Properties {
 		this.forEach((k, v) -> {
 			Matcher matcher = pattern.matcher(k.toString());
 			if (matcher.matches()) {
+				result.put(k, v);
+			}
+		});
+		return result;
+	}
+
+	public EnrichedProperties filterByStartsWith(String keyStartsWith) {
+		EnrichedProperties result = new EnrichedProperties();
+		this.forEach((k, v) -> {
+			if (k instanceof String && k.toString().startsWith(keyStartsWith)) {
 				result.put(k, v);
 			}
 		});
@@ -212,27 +237,27 @@ public class EnrichedProperties extends Properties {
 
 	private static int toInt(String value) {
 		rejectIfNull(value);
-		return Integer.valueOf(value);
+		return Integer.parseInt(value);
 	}
 
 	private static long toLong(String value) {
 		rejectIfNull(value);
-		return Long.valueOf(value);
+		return Long.parseLong(value);
 	}
 
 	private static double toDouble(String value) {
 		rejectIfNull(value);
-		return Double.valueOf(value);
+		return Double.parseDouble(value);
 	}
 
 	private static float toFloat(String value) {
 		rejectIfNull(value);
-		return Float.valueOf(value);
+		return Float.parseFloat(value);
 	}
 
 	private static boolean toBoolean(String value) {
 		rejectIfNull(value);
-		return Boolean.valueOf(value);
+		return Boolean.parseBoolean(value);
 	}
 
 	private static Date toDate(String value, String pattern) {

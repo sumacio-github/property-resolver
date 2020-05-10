@@ -18,21 +18,21 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 
     protected EnrichedProperties systemUnderTest;
 
-    protected static final String STRING_KEY = "test.string";
-    protected static final String INT_KEY = "test.int";
-    protected static final String LONG_KEY = "test.long";
-    protected static final String DOUBLE_KEY = "test.double";
-    protected static final String FLOAT_KEY = "test.float";
-    protected static final String BOOLEAN_KEY = "test.boolean";
-    protected static final String DATE_KEY = "test.date";
+    protected static final String STRING_KEY = "object.string";
+    protected static final String INT_KEY = "object.int";
+    protected static final String LONG_KEY = "object.long";
+    protected static final String DOUBLE_KEY = "object.double";
+    protected static final String FLOAT_KEY = "object.float";
+    protected static final String BOOLEAN_KEY = "object.boolean";
+    protected static final String DATE_KEY = "object.date";
 
-    protected static final String STRING_KEY_NOT_FOUND = "test.string.notfound";
-    protected static final String INT_KEY_NOT_FOUND = "test.int.notfound";
-    protected static final String LONG_KEY_NOT_FOUND = "test.long.notfound";
-    protected static final String DOUBLE_KEY_NOT_FOUND = "test.double.notfound";
-    protected static final String FLOAT_KEY_NOT_FOUND = "test.float.notfound";
-    protected static final String BOOLEAN_KEY_NOT_FOUND = "test.boolean.notfound";
-    protected static final String DATE_KEY_NOT_FOUND = "test.date.notfound";
+    protected static final String STRING_KEY_NOT_FOUND = "object.string.notfound";
+    protected static final String INT_KEY_NOT_FOUND = "object.int.notfound";
+    protected static final String LONG_KEY_NOT_FOUND = "object.long.notfound";
+    protected static final String DOUBLE_KEY_NOT_FOUND = "object.double.notfound";
+    protected static final String FLOAT_KEY_NOT_FOUND = "object.float.notfound";
+    protected static final String BOOLEAN_KEY_NOT_FOUND = "object.boolean.notfound";
+    protected static final String DATE_KEY_NOT_FOUND = "object.date.notfound";
 
     protected static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 

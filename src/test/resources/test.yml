@@ -1,4 +1,11 @@
-test:
+string: "hello world"
+boolean: true
+int: 32
+long: 64
+double: 2.2
+float: 1.1
+date: 1984-08-17T21:42:27.639-05:00
+object:
   string: "hello world"
   boolean: true
   int: 32
@@ -6,3 +13,19 @@ test:
   double: 2.2
   float: 1.1
   date: 1984-08-17T21:42:27.639-05:00
+list:
+  - string: "hello world"
+    boolean: true
+    int: 32
+    long: 64
+    double: 2.2
+    float: 1.1
+    date: 1984-08-17T21:42:27.639-05:00
+  - string: "hello world"
+    boolean: true
+    int: 32
+    long: 64
+    double: 2.2
+    float: 1.1
+    date: 1984-08-17T21:42:27.639-05:00
+strings: ["hello", "goodbye"]

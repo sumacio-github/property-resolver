@@ -1,19 +1,17 @@
 package io.sumac.propertyresolver;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
+import io.sumac.propertyresolver.domain.Model;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.Test;
 
-public class XmlEnrichedPropertyResolverTest extends AbstractEnrichedPropertyResolverTest {
+public class XmlElementEnrichedPropertyResolverTest extends AbstractEnrichedPropertyResolverTest {
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException {
         systemUnderTest = new EnrichedProperties();
-        systemUnderTest.loadFromXmlString(readFromInputStream(this.getClass().getClassLoader().getResourceAsStream("test.xml")));
+        systemUnderTest.loadFromXmlString(readFromInputStream(this.getClass().getClassLoader().getResourceAsStream("test_1.xml")), Model.class);
     }
-
 }
