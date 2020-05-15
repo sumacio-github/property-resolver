@@ -21,6 +21,8 @@ public class Fields {
     @JsonProperty("date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "America/Chicago")
     private Date dateVal;
+    @JsonProperty("empty")
+    private Object emptyVal;
 
     public String getStringVal() {
         return stringVal;
@@ -76,5 +78,13 @@ public class Fields {
 
     public void setDateVal(Date dateVal) {
         this.dateVal = dateVal;
+    }
+
+    public Object getEmptyVal() {
+        return emptyVal;
+    }
+
+    public void setEmptyVal(Object emptyVal) {
+        this.emptyVal = emptyVal;
     }
 }

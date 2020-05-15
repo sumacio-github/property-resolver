@@ -5,6 +5,7 @@ long: 64
 double: 2.2
 float: 1.1
 date: 1984-08-17T21:42:27.639-05:00
+empty: null
 object:
   string: "hello world"
   boolean: true
@@ -13,6 +14,7 @@ object:
   double: 2.2
   float: 1.1
   date: 1984-08-17T21:42:27.639-05:00
+  empty: null
 list:
   - string: "hello world"
     boolean: true
@@ -21,6 +23,7 @@ list:
     double: 2.2
     float: 1.1
     date: 1984-08-17T21:42:27.639-05:00
+    empty: null
   - string: "hello world"
     boolean: true
     int: 32
@@ -28,4 +31,5 @@ list:
     double: 2.2
     float: 1.1
     date: 1984-08-17T21:42:27.639-05:00
+    empty: null
 strings: ["hello", "goodbye"]

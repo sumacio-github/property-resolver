@@ -6,6 +6,7 @@
   "double" : 2.2,
   "float" : 1.1,
   "date" : "1984-08-17T21:42:27.639-05:00",
+  "empty" : null,
   "object" : {
     "string" : "hello world",
     "boolean" : true,
@@ -13,7 +14,8 @@
     "long" : 64,
     "double" : 2.2,
     "float" : 1.1,
-    "date" : "1984-08-17T21:42:27.639-05:00"
+    "date" : "1984-08-17T21:42:27.639-05:00",
+    "empty" : null
   },
   "list" : [
     {
@@ -23,7 +25,8 @@
       "long" : 64,
       "double" : 2.2,
       "float" : 1.1,
-      "date" : "1984-08-17T21:42:27.639-05:00"
+      "date" : "1984-08-17T21:42:27.639-05:00",
+      "empty" : null
     },{
       "string" : "hello world",
       "boolean" : true,
@@ -31,7 +34,8 @@
       "long" : 64,
       "double" : 2.2,
       "float" : 1.1,
-      "date" : "1984-08-17T21:42:27.639-05:00"
+      "date" : "1984-08-17T21:42:27.639-05:00",
+      "empty" : null
     }
   ],
   "strings" : ["hello","goodbye"]

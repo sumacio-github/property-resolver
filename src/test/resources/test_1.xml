@@ -6,6 +6,7 @@
     <double>2.2</double>
     <float>1.1</float>
     <date>1984-08-17T21:42:27.639-05:00</date>
+    <empty />
     <object>
         <string>hello world</string>
         <boolean>true</boolean>
@@ -14,6 +15,7 @@
         <double>2.2</double>
         <float>1.1</float>
         <date>1984-08-17T21:42:27.639-05:00</date>
+        <empty />
     </object>
     <list>
         <object>
@@ -24,6 +26,7 @@
             <double>2.2</double>
             <float>1.1</float>
             <date>1984-08-17T21:42:27.639-05:00</date>
+            <empty />
         </object>
         <object>
             <string>hello world</string>
@@ -33,6 +36,7 @@
             <double>2.2</double>
             <float>1.1</float>
             <date>1984-08-17T21:42:27.639-05:00</date>
+            <empty />
         </object>
     </list>
     <strings>hello</strings>
