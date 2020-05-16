@@ -16,25 +16,25 @@ import static org.hamcrest.Matchers.is;
 
 public abstract class AbstractEnrichedPropertyResolverTest {
 
-    protected EnrichedProperties systemUnderTest;
+    protected ExtendedEnrichedProperties systemUnderTest;
 
-    protected static final String STRING_KEY = "object.string";
-    protected static final String INT_KEY = "object.int";
-    protected static final String LONG_KEY = "object.long";
-    protected static final String DOUBLE_KEY = "object.double";
-    protected static final String FLOAT_KEY = "object.float";
-    protected static final String BOOLEAN_KEY = "object.boolean";
-    protected static final String DATE_KEY = "object.date";
+    protected static final String STRING_KEY = "string";
+    protected static final String INT_KEY = "int";
+    protected static final String LONG_KEY = "long";
+    protected static final String DOUBLE_KEY = "double";
+    protected static final String FLOAT_KEY = "float";
+    protected static final String BOOLEAN_KEY = "boolean";
+    protected static final String DATE_KEY = "date";
+    protected static final String EMPTY_KEY = "empty";
 
-    protected static final String STRING_KEY_NOT_FOUND = "object.string.notfound";
-    protected static final String INT_KEY_NOT_FOUND = "object.int.notfound";
-    protected static final String LONG_KEY_NOT_FOUND = "object.long.notfound";
-    protected static final String DOUBLE_KEY_NOT_FOUND = "object.double.notfound";
-    protected static final String FLOAT_KEY_NOT_FOUND = "object.float.notfound";
-    protected static final String BOOLEAN_KEY_NOT_FOUND = "object.boolean.notfound";
-    protected static final String DATE_KEY_NOT_FOUND = "object.date.notfound";
-
-    protected static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+    protected static final String STRING_KEY_NOT_FOUND = "string.notfound";
+    protected static final String INT_KEY_NOT_FOUND = "int.notfound";
+    protected static final String LONG_KEY_NOT_FOUND = "long.notfound";
+    protected static final String DOUBLE_KEY_NOT_FOUND = "double.notfound";
+    protected static final String FLOAT_KEY_NOT_FOUND = "float.notfound";
+    protected static final String BOOLEAN_KEY_NOT_FOUND = "boolean.notfound";
+    protected static final String DATE_KEY_NOT_FOUND = "date.notfound";
+    protected static final String EMPTY_KEY_NOT_FOUND = "empty.notfound";
 
     protected static final String STRING_VALUE = "hello world";
     protected static final int INT_VALUE = 32;
@@ -43,10 +43,19 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     protected static final float FLOAT_VALUE = 1.1f;
     protected static final boolean BOOLEAN_VALUE = true;
     protected static final Date DATE_VALUE;
+    protected static final String EMPTY_VALUE = "";
 
+    protected static final String INT_STRING_VALUE = INT_VALUE + "";
+    protected static final String LONG_STRING_VALUE = LONG_VALUE + "";
+    protected static final String DOUBLE_STRING_VALUE = DOUBLE_VALUE + "";
+    protected static final String FLOAT_STRING_VALUE = FLOAT_VALUE + "";
+    protected static final String BOOLEAN_STRING_VALUE = BOOLEAN_VALUE + "";
+    protected static final String DATE_STRING_VALUE = "1984-08-17T21:42:27.639-05:00";
+
+    protected static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     static {
         try {
-            DATE_VALUE = new SimpleDateFormat(DATE_PATTERN).parse("1984-08-17T21:42:27.639-05:00");
+            DATE_VALUE = new SimpleDateFormat(DATE_PATTERN).parse(DATE_STRING_VALUE);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -209,6 +218,65 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     public void testGetDateRequired_notExists() {
         Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
                 () -> systemUnderTest.getDateRequired(DATE_KEY_NOT_FOUND, DATE_PATTERN));
+    }
+
+    @Test
+    public void testGetEmpty_exists() {
+        assertThat(systemUnderTest.getString(EMPTY_KEY).get(), is(EMPTY_VALUE));
+    }
+
+    @Test
+    public void testGetEmpty_notExists() {
+        assertThat(systemUnderTest.getString(EMPTY_KEY_NOT_FOUND).isPresent(), is(false));
+    }
+
+    @Test
+    public void testGetEmptyRequired_exists() {
+        assertThat(systemUnderTest.getStringRequired(EMPTY_KEY), is(EMPTY_VALUE));
+    }
+
+    @Test
+    public void testGetEmptyRequired_notExists() {
+        Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
+                () -> systemUnderTest.getStringRequired(EMPTY_KEY_NOT_FOUND));
+    }
+
+    @Test
+    public void testGetChildProperties_object() {
+        testGetChildProperties("object");
+        testGetChildProperties("list.1");
+        testGetChildProperties("list.2");
+    }
+
+    private void testGetChildProperties(String parent) {
+        EnrichedProperties props = systemUnderTest.getChildProperties(parent);
+        assertThat(parent + STRING_KEY, props.getStringRequired(STRING_KEY), is(STRING_VALUE));
+        assertThat(parent + INT_KEY, props.getStringRequired(INT_KEY), is(INT_STRING_VALUE));
+        assertThat(parent + LONG_KEY, props.getStringRequired(LONG_KEY), is(LONG_STRING_VALUE));
+        assertThat(parent + DOUBLE_KEY, props.getStringRequired(DOUBLE_KEY), is(DOUBLE_STRING_VALUE));
+        assertThat(parent + FLOAT_KEY, props.getStringRequired(FLOAT_KEY), is(FLOAT_STRING_VALUE));
+        assertThat(parent + BOOLEAN_KEY, props.getStringRequired(BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
+        assertThat(parent + DATE_KEY, props.getStringRequired(DATE_KEY), is(DATE_STRING_VALUE));
+        assertThat(parent + EMPTY_KEY, props.getStringRequired(EMPTY_KEY), is(EMPTY_VALUE));
+    }
+
+    @Test
+    public void testFilterByStartsWith_object() {
+        testFilterByStartsWith("object");
+        testFilterByStartsWith("list.1");
+        testFilterByStartsWith("list.2");
+    }
+
+    private void testFilterByStartsWith(String parent) {
+        EnrichedProperties props = systemUnderTest.filterByStartsWith(parent);
+        assertThat(parent + STRING_KEY, props.getStringRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
+        assertThat(parent + INT_KEY, props.getStringRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
+        assertThat(parent + LONG_KEY, props.getStringRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
+        assertThat(parent + DOUBLE_KEY, props.getStringRequired(parent + "." + DOUBLE_KEY), is(DOUBLE_STRING_VALUE));
+        assertThat(parent + FLOAT_KEY, props.getStringRequired(parent + "." + FLOAT_KEY), is(FLOAT_STRING_VALUE));
+        assertThat(parent + BOOLEAN_KEY, props.getStringRequired(parent + "." + BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
+        assertThat(parent + DATE_KEY, props.getStringRequired(parent + "." + DATE_KEY), is(DATE_STRING_VALUE));
+        assertThat(parent + EMPTY_KEY, props.getStringRequired(parent + "." + EMPTY_KEY), is(EMPTY_VALUE));
     }
 
 }

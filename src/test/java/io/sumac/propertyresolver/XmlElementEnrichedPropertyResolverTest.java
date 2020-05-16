@@ -11,7 +11,7 @@ public class XmlElementEnrichedPropertyResolverTest extends AbstractEnrichedProp
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException {
-        systemUnderTest = new EnrichedProperties();
-        systemUnderTest.loadFromXmlString(readFromInputStream(this.getClass().getClassLoader().getResourceAsStream("test_1.xml")), Model.class);
+        systemUnderTest = new ExtendedEnrichedProperties();
+        systemUnderTest.loadXmlFromClasspath("test_1.xml", Model.class);
     }
 }

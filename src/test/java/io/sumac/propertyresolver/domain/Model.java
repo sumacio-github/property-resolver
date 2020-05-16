@@ -16,6 +16,9 @@ public class Model extends Fields {
     @JsonProperty("strings")
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<String> strings;
+    @JsonProperty("soloString")
+    @JacksonXmlElementWrapper(useWrapping = false)
+    private List<String> soloString;
 
     public Fields getObjectVal() {
         return objectVal;
@@ -39,5 +42,13 @@ public class Model extends Fields {
 
     public void setStrings(List<String> strings) {
         this.strings = strings;
+    }
+
+    public List<String> getSoloString() {
+        return soloString;
+    }
+
+    public void setSoloString(List<String> soloString) {
+        this.soloString = soloString;
     }
 }

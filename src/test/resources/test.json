@@ -38,5 +38,6 @@
       "empty" : null
     }
   ],
-  "strings" : ["hello","goodbye"]
+  "strings" : ["hello","goodbye"],
+  "soloString" : ["solo"]
 }

@@ -15,7 +15,7 @@ public class PojoEnrichedPropertyResolverTest extends AbstractEnrichedPropertyRe
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException, ParseException {
-        systemUnderTest = new EnrichedProperties();
+        systemUnderTest = new ExtendedEnrichedProperties();
         Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse("1984-08-17T21:42:27.639-05:00");
         Fields fields = new Fields();
         fields.setStringVal("hello world");

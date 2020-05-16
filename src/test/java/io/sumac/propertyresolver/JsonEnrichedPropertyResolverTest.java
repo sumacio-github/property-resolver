@@ -12,7 +12,7 @@ public class JsonEnrichedPropertyResolverTest extends AbstractEnrichedPropertyRe
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException {
-        systemUnderTest = new EnrichedProperties();
-        systemUnderTest.loadFromJsonString(readFromInputStream(this.getClass().getClassLoader().getResourceAsStream("test.json")));
+        systemUnderTest = new ExtendedEnrichedProperties();
+        systemUnderTest.loadFromClasspath("test.json");
     }
 }

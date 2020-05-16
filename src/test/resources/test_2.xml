@@ -6,4 +6,5 @@
     </list>
     <strings>hello</strings>
     <strings>goodbye</strings>
+    <soloString>solo</soloString>
 </root>
