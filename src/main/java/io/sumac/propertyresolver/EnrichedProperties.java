@@ -26,7 +26,8 @@ public class EnrichedProperties extends Properties {
     }
 
     public EnrichedProperties(Properties properties) {
-        super(properties);
+        super();
+        putAll(properties);
     }
 
     public Optional<String> getString(String key) {

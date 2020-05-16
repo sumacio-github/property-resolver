@@ -36,7 +36,8 @@ public class ExtendedEnrichedProperties extends EnrichedProperties {
     }
 
     public ExtendedEnrichedProperties(Properties properties) {
-        super(properties);
+        super();
+        putAll(properties);
     }
 
     public void loadFromJsonNode(JsonNode input) throws IOException {
@@ -118,4 +119,15 @@ public class ExtendedEnrichedProperties extends EnrichedProperties {
         return new ExtendedEnrichedProperties(props);
     }
 
+    public EnrichedProperties filterByRegex(String regex) {
+       return toEnriched(super.filterByRegex(regex));
+    }
+
+    public EnrichedProperties filterByStartsWith(String keyStartsWith) {
+        return toEnriched(super.filterByStartsWith(keyStartsWith));
+    }
+
+    public ExtendedEnrichedProperties getChildProperties(String parentPropertyKey) {
+        return toEnriched(super.getChildProperties(parentPropertyKey));
+    }
 }
