@@ -1,6 +1,7 @@
 package io.sumac.propertyresolver;
 
 import io.sumac.propertyresolver.utility.IOThrowingSupplier;
+import io.sumac.propertyresolver.utility.PreCondition;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -124,6 +125,14 @@ public class EnrichedProperties extends Properties {
     public void show() {
         TreeSet<String> sortedKeys = new TreeSet<>(this.stringPropertyNames());
         sortedKeys.forEach(k -> System.out.println(k + "=" + this.getProperty(k)));
+    }
+
+    public void show(IOThrowingSupplier<String> customFormatter) {
+        try {
+            System.out.println(PreCondition.Result.notNull(customFormatter.get()));
+        } catch (IOException e) {
+            throw PropertyResolverException.from(e);
+        }
     }
 
     public void loadFromSource(IOThrowingSupplier<Properties> source) throws IOException {
