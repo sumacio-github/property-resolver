@@ -14,6 +14,12 @@ public class SimpleFileReader {
         }
     }
 
+    /**
+     * Reads a file from the classpath and returns the contents of the file as a string.
+     * @param resourceName the name of the classpath resource
+     * @return the text content of the file
+     * @throws IOException if reading from the file results in an {@code IOException}
+     */
     public static String readFromClasspath(@NotNull String resourceName) throws IOException {
         PreCondition.Parameter.notNull(resourceName);
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
@@ -22,6 +28,12 @@ public class SimpleFileReader {
         }
     }
 
+    /**
+     * Reads a file from the file system and returns the contents of the file as a string.
+     * @param filePath the absolute path of the file
+     * @return the text content of the file
+     * @throws IOException if reading from the file results in an {@code IOException}
+     */
     public static String readFromFile(@NotNull String filePath) throws IOException {
         PreCondition.Parameter.notNull(filePath);
         File file = new File(filePath);
