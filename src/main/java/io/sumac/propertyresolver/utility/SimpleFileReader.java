@@ -6,6 +6,13 @@ import java.io.*;
 import java.net.URL;
 
 public class SimpleFileReader {
+
+    /**
+     * Reads a remote text file and returns the contents of the file as a string.
+     * @param resourceName the name of the classpath resource
+     * @return the text content of the file
+     * @throws IOException if reading from the file results in an {@code IOException}
+     */
     public static String readFromRemoteFile(@NotNull String fileUrl) throws IOException {
         PreCondition.Parameter.notNull(fileUrl);
         URL url = new URL(fileUrl);
