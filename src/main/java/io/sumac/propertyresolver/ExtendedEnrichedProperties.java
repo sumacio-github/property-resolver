@@ -97,11 +97,7 @@ public class ExtendedEnrichedProperties extends EnrichedProperties {
     }
 
     private void loadFromSupportedFile(String textContent, String path) throws IOException {
-        SupportedExtensions fileType = SupportedExtensions.getExtension(path);
-        switch (fileType) {
-            case PROPERTIES:
-                loadFromPropertiesString(textContent);
-                break;
+        switch (SupportedExtensions.getExtension(path)) {
             case YAML:
                 loadFromYamlString(textContent);
                 break;

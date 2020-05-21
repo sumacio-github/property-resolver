@@ -136,7 +136,13 @@ public class EnrichedProperties extends Properties {
     }
 
     public void loadFromSource(IOThrowingSupplier<Properties> source) throws IOException {
-        this.putAll(source.get());
+        loadFromSource(Collections.singletonList(source));
+    }
+
+    public void loadFromSource(List<IOThrowingSupplier<Properties>> sources) throws IOException {
+        for(IOThrowingSupplier<Properties> source : sources) {
+            putAll(source.get());
+        }
     }
 
     public void setDecryptor(Function<String, String> decryptor) {
