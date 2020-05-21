@@ -26,6 +26,9 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     protected static final String BOOLEAN_KEY = "boolean";
     protected static final String DATE_KEY = "date";
     protected static final String EMPTY_KEY = "empty";
+    protected static final String STRINGS_KEY_1 = "strings.1";
+    protected static final String STRINGS_KEY_2 = "strings.2";
+    protected static final String SOLO_STRING_KEY = "soloString.1";
 
     protected static final String STRING_KEY_NOT_FOUND = "string.notfound";
     protected static final String INT_KEY_NOT_FOUND = "int.notfound";
@@ -35,6 +38,9 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     protected static final String BOOLEAN_KEY_NOT_FOUND = "boolean.notfound";
     protected static final String DATE_KEY_NOT_FOUND = "date.notfound";
     protected static final String EMPTY_KEY_NOT_FOUND = "empty.notfound";
+    protected static final String STRINGS_KEY_1_NOT_FOUND = "strings.1.notfound";
+    protected static final String STRINGS_KEY_2_NOT_FOUND = "strings.2.notfound";
+    protected static final String SOLO_STRING_KEY_NOT_FOUND = "soloString.1.notfound";
 
     protected static final String STRING_VALUE = "hello world";
     protected static final int INT_VALUE = 32;
@@ -44,6 +50,9 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     protected static final boolean BOOLEAN_VALUE = true;
     protected static final Date DATE_VALUE;
     protected static final String EMPTY_VALUE = "";
+    protected static final String STRINGS_VALUE_1 = "hello";
+    protected static final String STRINGS_VALUE_2 = "goodbye";
+    protected static final String SOLO_STRING_VALUE = "solo";
 
     protected static final String INT_STRING_VALUE = INT_VALUE + "";
     protected static final String LONG_STRING_VALUE = LONG_VALUE + "";
@@ -258,6 +267,9 @@ public abstract class AbstractEnrichedPropertyResolverTest {
         assertThat(parent + BOOLEAN_KEY, props.getStringRequired(BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
         assertThat(parent + DATE_KEY, props.getStringRequired(DATE_KEY), is(DATE_STRING_VALUE));
         assertThat(parent + EMPTY_KEY, props.getStringRequired(EMPTY_KEY), is(EMPTY_VALUE));
+        assertThat(parent + STRINGS_KEY_1, props.getStringRequired(STRINGS_KEY_1), is(STRINGS_VALUE_1));
+        assertThat(parent + STRINGS_KEY_2, props.getStringRequired(STRINGS_KEY_2), is(STRINGS_VALUE_2));
+        assertThat(parent + SOLO_STRING_KEY, props.getStringRequired(SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
     }
 
     @Test
@@ -277,6 +289,31 @@ public abstract class AbstractEnrichedPropertyResolverTest {
         assertThat(parent + BOOLEAN_KEY, props.getStringRequired(parent + "." + BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
         assertThat(parent + DATE_KEY, props.getStringRequired(parent + "." + DATE_KEY), is(DATE_STRING_VALUE));
         assertThat(parent + EMPTY_KEY, props.getStringRequired(parent + "." + EMPTY_KEY), is(EMPTY_VALUE));
+        assertThat(parent + STRINGS_KEY_1, props.getStringRequired(parent + "." + STRINGS_KEY_1), is(STRINGS_VALUE_1));
+        assertThat(parent + STRINGS_KEY_2, props.getStringRequired(parent + "." + STRINGS_KEY_2), is(STRINGS_VALUE_2));
+        assertThat(parent + SOLO_STRING_KEY, props.getStringRequired(parent + "." + SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
+    }
+
+    @Test
+    public void testFilterByRegex_object() {
+        testFilterByRegex("object", "^object.*");
+        testFilterByRegex("list.1", "^list\\.1.*");
+        testFilterByRegex("list.2", "^list\\.2.*");
+    }
+
+    private void testFilterByRegex(String parent, String regex) {
+        EnrichedProperties props = systemUnderTest.filterByRegex(regex);
+        assertThat(parent + STRING_KEY, props.getStringRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
+        assertThat(parent + INT_KEY, props.getStringRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
+        assertThat(parent + LONG_KEY, props.getStringRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
+        assertThat(parent + DOUBLE_KEY, props.getStringRequired(parent + "." + DOUBLE_KEY), is(DOUBLE_STRING_VALUE));
+        assertThat(parent + FLOAT_KEY, props.getStringRequired(parent + "." + FLOAT_KEY), is(FLOAT_STRING_VALUE));
+        assertThat(parent + BOOLEAN_KEY, props.getStringRequired(parent + "." + BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
+        assertThat(parent + DATE_KEY, props.getStringRequired(parent + "." + DATE_KEY), is(DATE_STRING_VALUE));
+        assertThat(parent + EMPTY_KEY, props.getStringRequired(parent + "." + EMPTY_KEY), is(EMPTY_VALUE));
+        assertThat(parent + STRINGS_KEY_1, props.getStringRequired(parent + "." + STRINGS_KEY_1), is(STRINGS_VALUE_1));
+        assertThat(parent + STRINGS_KEY_2, props.getStringRequired(parent + "." + STRINGS_KEY_2), is(STRINGS_VALUE_2));
+        assertThat(parent + SOLO_STRING_KEY, props.getStringRequired(parent + "." + SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
     }
 
 }

@@ -7,6 +7,9 @@
     <float>1.1</float>
     <date>1984-08-17T21:42:27.639-05:00</date>
     <empty />
+    <strings>hello</strings>
+    <strings>goodbye</strings>
+    <soloString>solo</soloString>
     <object>
         <string>hello world</string>
         <boolean>true</boolean>
@@ -16,6 +19,9 @@
         <float>1.1</float>
         <date>1984-08-17T21:42:27.639-05:00</date>
         <empty />
+        <strings>hello</strings>
+        <strings>goodbye</strings>
+        <soloString>solo</soloString>
     </object>
     <list>
         <object>
@@ -27,6 +33,9 @@
             <float>1.1</float>
             <date>1984-08-17T21:42:27.639-05:00</date>
             <empty />
+            <strings>hello</strings>
+            <strings>goodbye</strings>
+            <soloString>solo</soloString>
         </object>
         <object>
             <string>hello world</string>
@@ -37,9 +46,9 @@
             <float>1.1</float>
             <date>1984-08-17T21:42:27.639-05:00</date>
             <empty />
+            <strings>hello</strings>
+            <strings>goodbye</strings>
+            <soloString>solo</soloString>
         </object>
     </list>
-    <strings>hello</strings>
-    <strings>goodbye</strings>
-    <soloString>solo</soloString>
 </root>

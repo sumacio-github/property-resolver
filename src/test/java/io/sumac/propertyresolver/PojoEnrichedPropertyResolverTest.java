@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 public class PojoEnrichedPropertyResolverTest extends AbstractEnrichedPropertyResolverTest {
@@ -25,6 +26,8 @@ public class PojoEnrichedPropertyResolverTest extends AbstractEnrichedPropertyRe
         fields.setDoubleVal(2.2);
         fields.setFloatVal(1.1F);
         fields.setDateVal(date);
+        fields.setStrings(Arrays.asList("hello", "goodbye"));
+        fields.setSoloString(Collections.singletonList("solo"));
         Model model = new Model();
         model.setDateVal(fields.getDateVal());
         model.setFloatVal(fields.getFloatVal());
@@ -33,9 +36,10 @@ public class PojoEnrichedPropertyResolverTest extends AbstractEnrichedPropertyRe
         model.setIntVal(fields.getIntVal());
         model.setBooleanVal(fields.getBooleanVal());
         model.setStringVal(fields.getStringVal());
+        model.setStrings(fields.getStrings());
+        model.setSoloString(fields.getSoloString());
         model.setObjectVal(fields);
         model.setList(Arrays.asList(fields, fields));
-        model.setStrings(Arrays.asList("hello", "goodbye"));
         systemUnderTest.loadFromObject(model);
 
     }

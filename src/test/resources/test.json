@@ -7,6 +7,8 @@
   "float" : 1.1,
   "date" : "1984-08-17T21:42:27.639-05:00",
   "empty" : null,
+  "strings" : ["hello","goodbye"],
+  "soloString" : ["solo"],
   "object" : {
     "string" : "hello world",
     "boolean" : true,
@@ -15,7 +17,9 @@
     "double" : 2.2,
     "float" : 1.1,
     "date" : "1984-08-17T21:42:27.639-05:00",
-    "empty" : null
+    "empty" : null,
+    "strings" : ["hello","goodbye"],
+    "soloString" : ["solo"]
   },
   "list" : [
     {
@@ -26,7 +30,9 @@
       "double" : 2.2,
       "float" : 1.1,
       "date" : "1984-08-17T21:42:27.639-05:00",
-      "empty" : null
+      "empty" : null,
+      "strings" : ["hello","goodbye"],
+      "soloString" : ["solo"]
     },{
       "string" : "hello world",
       "boolean" : true,
@@ -35,9 +41,9 @@
       "double" : 2.2,
       "float" : 1.1,
       "date" : "1984-08-17T21:42:27.639-05:00",
-      "empty" : null
+      "empty" : null,
+      "strings" : ["hello","goodbye"],
+      "soloString" : ["solo"]
     }
-  ],
-  "strings" : ["hello","goodbye"],
-  "soloString" : ["solo"]
+  ]
 }
