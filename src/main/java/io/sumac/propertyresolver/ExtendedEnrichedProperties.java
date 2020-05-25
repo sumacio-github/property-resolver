@@ -5,18 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import io.sumac.propertyresolver.utility.SimpleFileReader;
+import io.sumac.propertyresolver.utility.SimpleTextFileReader;
 import io.sumac.propertyresolver.utility.SupportedExtensions;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Extension of {@code java.util.Properties} that adds some additional
@@ -73,27 +67,27 @@ public class ExtendedEnrichedProperties extends EnrichedProperties {
     }
 
     public void loadFromFile(String filePath) throws IOException {
-        loadFromSupportedFile(SimpleFileReader.readFromFile(filePath), filePath);
+        loadFromSupportedFile(SimpleTextFileReader.readFromFile(filePath), filePath);
     }
 
     public void loadFromClasspath(String classpathLocation) throws IOException {
-        loadFromSupportedFile(SimpleFileReader.readFromClasspath(classpathLocation), classpathLocation);
+        loadFromSupportedFile(SimpleTextFileReader.readFromClasspath(classpathLocation), classpathLocation);
     }
 
     public void loadFromURL(String fileUrl) throws IOException {
-        loadFromSupportedFile(SimpleFileReader.readFromRemoteFile(fileUrl), fileUrl);
+        loadFromSupportedFile(SimpleTextFileReader.readFromRemoteFile(fileUrl), fileUrl);
     }
 
     public void loadXmlFromFile(String filePath, Class<?> schema) throws IOException {
-        loadFromXmlString(SimpleFileReader.readFromFile(filePath), schema);
+        loadFromXmlString(SimpleTextFileReader.readFromFile(filePath), schema);
     }
 
     public void loadXmlFromClasspath(String classpathLocation, Class<?> schema) throws IOException {
-        loadFromXmlString(SimpleFileReader.readFromClasspath(classpathLocation), schema);
+        loadFromXmlString(SimpleTextFileReader.readFromClasspath(classpathLocation), schema);
     }
 
     public void loadXmlFromURL(String fileUrl, Class<?> schema) throws IOException {
-        loadFromXmlString(SimpleFileReader.readFromRemoteFile(fileUrl), schema);
+        loadFromXmlString(SimpleTextFileReader.readFromRemoteFile(fileUrl), schema);
     }
 
     private void loadFromSupportedFile(String textContent, String path) throws IOException {

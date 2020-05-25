@@ -5,7 +5,7 @@ import io.sumac.propertyresolver.annotations.NotNull;
 import java.io.*;
 import java.net.URL;
 
-public class SimpleFileReader {
+public class SimpleTextFileReader {
 
     /**
      * Reads a remote text file and returns the contents of the file as a string.
