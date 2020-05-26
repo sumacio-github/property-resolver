@@ -140,7 +140,7 @@ public class EnrichedProperties extends Properties {
     }
 
     public void loadFromSource(List<IOThrowingSupplier<Properties>> sources) throws IOException {
-        for(IOThrowingSupplier<Properties> source : sources) {
+        for (IOThrowingSupplier<Properties> source : sources) {
             putAll(source.get());
         }
     }
@@ -185,6 +185,26 @@ public class EnrichedProperties extends Properties {
         if (!this.containsKey(key)) {
             throw PropertyResolverException.propertyNotFound(key);
         }
+    }
+
+    private static final String STARTS_WITH = "${";
+    private static final String ENDS_WITH = "}";
+
+    public String interpolate(String text) {
+        PreCondition.Parameter.notNull(text);
+        String newText = text;
+        boolean madeReplacements = false;
+        do {
+            madeReplacements = false;
+            for (Map.Entry<Object, Object> entry : this.entrySet()) {
+                String prop = STARTS_WITH + entry.getKey() + ENDS_WITH;
+                if (newText.contains(prop) && !Objects.isNull(entry.getValue())) {
+                    newText = newText.replace(prop, entry.getValue().toString());
+                    madeReplacements = true;
+                }
+            }
+        } while (madeReplacements);
+        return newText;
     }
 
     private static int toInt(String value) {

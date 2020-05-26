@@ -1,5 +1,6 @@
 package io.sumac.propertyresolver;
 
+import io.sumac.propertyresolver.utility.SimpleTextFileReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -314,6 +315,13 @@ public abstract class AbstractEnrichedPropertyResolverTest {
         assertThat(parent + STRINGS_KEY_1, props.getStringRequired(parent + "." + STRINGS_KEY_1), is(STRINGS_VALUE_1));
         assertThat(parent + STRINGS_KEY_2, props.getStringRequired(parent + "." + STRINGS_KEY_2), is(STRINGS_VALUE_2));
         assertThat(parent + SOLO_STRING_KEY, props.getStringRequired(parent + "." + SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
+    }
+
+    @Test
+    public void testInterpolate() throws IOException {
+        String text = SimpleTextFileReader.readFromClasspath("interpolate_1.txt");
+        String expected = SimpleTextFileReader.readFromClasspath("interpolate_2.txt");
+        assertThat(systemUnderTest.interpolate(text), is(expected));
     }
 
 }
