@@ -1,8 +1,10 @@
 package io.sumac.propertyresolver;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
+import com.fasterxml.jackson.dataformat.javaprop.JavaPropsSchema;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.sumac.propertyresolver.utility.SimpleTextFileReader;
@@ -23,6 +25,7 @@ public class ExtendedEnrichedProperties extends EnrichedProperties {
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     private static final YAMLMapper YAML_MAPPER = new YAMLMapper();
     private static final JavaPropsMapper PROPS_MAPPER = new JavaPropsMapper();
+    private static final JavaPropsSchema JAVA_PROPS_SCHEMA = JavaPropsSchema.emptySchema();
     private static final XmlMapper XML_MAPPER = new XmlMapper();
 
     public ExtendedEnrichedProperties() {
@@ -119,5 +122,14 @@ public class ExtendedEnrichedProperties extends EnrichedProperties {
 
     public ExtendedEnrichedProperties getChildProperties(String parentPropertyKey) {
         return toEnriched(super.getChildProperties(parentPropertyKey));
+    }
+
+    public  <T> T bind(Class<T> type) throws IOException {
+        Properties props = new Properties();
+        this.forEach((k,v) -> {
+            props.put(k, this.getStringRequired(k.toString()));
+        });
+        JsonParser parser = PROPS_MAPPER.getFactory().createParser(props);
+        return PROPS_MAPPER.readValue(parser, type);
     }
 }

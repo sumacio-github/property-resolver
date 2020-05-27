@@ -111,4 +111,20 @@ public class Fields {
     public void setSoloString(List<String> soloString) {
         this.soloString = soloString;
     }
+
+    @Override
+    public String toString() {
+        return "Fields{" +
+                "stringVal='" + stringVal + '\'' +
+                ", intVal=" + intVal +
+                ", longVal=" + longVal +
+                ", booleanVal=" + booleanVal +
+                ", doubleVal=" + doubleVal +
+                ", floatVal=" + floatVal +
+                ", dateVal=" + dateVal +
+                ", emptyVal=" + emptyVal +
+                ", strings=" + strings +
+                ", soloString=" + soloString +
+                '}';
+    }
 }

@@ -13,6 +13,10 @@ public class Model extends Fields {
     @JacksonXmlElementWrapper(useWrapping = true)
     @JsonProperty("list")
     private List<Fields> list;
+    @JsonProperty("interpolated")
+    private String interpolated;
+    @JsonProperty("uninterpolated")
+    private String uninterpolated;
 
     public Fields getObjectVal() {
         return objectVal;
@@ -28,5 +32,31 @@ public class Model extends Fields {
 
     public void setList(List<Fields> list) {
         this.list = list;
+    }
+
+    public String getInterpolated() {
+        return interpolated;
+    }
+
+    public void setInterpolated(String interpolated) {
+        this.interpolated = interpolated;
+    }
+
+    public String getUninterpolated() {
+        return uninterpolated;
+    }
+
+    public void setUninterpolated(String uninterpolated) {
+        this.uninterpolated = uninterpolated;
+    }
+
+    @Override
+    public String toString() {
+        return "Model{" +
+                "objectVal=" + objectVal +
+                ", list=" + list +
+                ", interpolated='" + interpolated + '\'' +
+                ", uninterpolated='" + uninterpolated + '\'' +
+                '}';
     }
 }

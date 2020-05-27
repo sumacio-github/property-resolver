@@ -9,7 +9,7 @@ public class SimpleTextFileReader {
 
     /**
      * Reads a remote text file and returns the contents of the file as a string.
-     * @param resourceName the name of the classpath resource
+     * @param fileUrl the full path to the file
      * @return the text content of the file
      * @throws IOException if reading from the file results in an {@code IOException}
      */

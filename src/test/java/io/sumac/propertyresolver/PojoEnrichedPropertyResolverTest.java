@@ -40,6 +40,8 @@ public class PojoEnrichedPropertyResolverTest extends AbstractEnrichedPropertyRe
         model.setSoloString(fields.getSoloString());
         model.setObjectVal(fields);
         model.setList(Arrays.asList(fields, fields));
+        model.setInterpolated("object.string > ${object.string} and list.1.string > ${list.1.string}");
+        model.setUninterpolated("object.string.notFound > ${object.string.notFound} and list.1.string.notFound > ${list.1.string.notFound}");
         systemUnderTest.loadFromObject(model);
 
     }

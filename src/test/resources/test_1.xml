@@ -10,6 +10,8 @@
     <strings>hello</strings>
     <strings>goodbye</strings>
     <soloString>solo</soloString>
+    <interpolated>object.string > ${object.string} and list.1.string > ${list.1.string}</interpolated>
+    <uninterpolated>object.string.notFound > ${object.string.notFound} and list.1.string.notFound > ${list.1.string.notFound}</uninterpolated>
     <object>
         <string>hello world</string>
         <boolean>true</boolean>

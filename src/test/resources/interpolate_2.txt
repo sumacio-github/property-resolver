@@ -42,3 +42,5 @@ list.2.empty=
 list.2.strings.1=hello
 list.2.strings.2=goodbye
 list.2.soloString.1=solo
+interpolated=object.string > hello world and list.1.string > hello world
+uninterpolated=object.string.notFound > ${object.string.notFound} and list.1.string.notFound > ${list.1.string.notFound}

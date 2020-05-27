@@ -1,5 +1,7 @@
 package io.sumac.propertyresolver;
 
+import io.sumac.propertyresolver.domain.Fields;
+import io.sumac.propertyresolver.domain.Model;
 import io.sumac.propertyresolver.utility.SimpleTextFileReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -63,6 +67,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     protected static final String DATE_STRING_VALUE = "1984-08-17T21:42:27.639-05:00";
 
     protected static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+
     static {
         try {
             DATE_VALUE = new SimpleDateFormat(DATE_PATTERN).parse(DATE_STRING_VALUE);
@@ -322,6 +327,30 @@ public abstract class AbstractEnrichedPropertyResolverTest {
         String text = SimpleTextFileReader.readFromClasspath("interpolate_1.txt");
         String expected = SimpleTextFileReader.readFromClasspath("interpolate_2.txt");
         assertThat(systemUnderTest.interpolate(text), is(expected));
+    }
+
+    @Test
+    public void testBind() throws IOException, ParseException {
+        Model model = systemUnderTest.bind(Model.class);
+        validateFields(model);
+        validateFields(model.getObjectVal());
+        validateFields(model.getList().get(0));
+        validateFields(model.getList().get(1));
+        assertThat(model.getInterpolated(), is("object.string > hello world and list.1.string > hello world"));
+        assertThat(model.getUninterpolated(), is("object.string.notFound > ${object.string.notFound} and list.1.string.notFound > ${list.1.string.notFound}"));
+    }
+
+    private void validateFields(Fields fields) throws ParseException {
+        Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse("1984-08-17T21:42:27.639-05:00");
+        assertThat(fields.getStringVal(), is("hello world"));
+        assertThat(fields.getBooleanVal(), is(true));
+        assertThat(fields.getIntVal(), is(32));
+        assertThat(fields.getLongVal(), is(64L));
+        assertThat(fields.getDoubleVal(), is(2.2));
+        assertThat(fields.getFloatVal(), is(1.1F));
+        assertThat(fields.getDateVal(), is(date));
+        assertThat(fields.getStrings(), is(Arrays.asList("hello", "goodbye")));
+        assertThat(fields.getSoloString(), is(Collections.singletonList("solo")));
     }
 
 }
