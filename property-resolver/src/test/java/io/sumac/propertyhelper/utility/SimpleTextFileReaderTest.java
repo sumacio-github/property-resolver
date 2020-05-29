@@ -23,6 +23,6 @@ public class SimpleTextFileReaderTest {
 
     @Test
     public void readFromRemoteFile() throws IOException {
-        assertThat(SimpleTextFileReader.readFromRemoteFile("https://raw.githubusercontent.com/sumacio-github/property-resolver/master/src/test/resources/file.txt"), is(FILE_TEXT));
+        assertThat(SimpleTextFileReader.readFromRemoteFile("https://raw.githubusercontent.com/sumacio-github/property-resolver/master/property-resolver/src/test/resources/file.txt"), is(FILE_TEXT));
     }
 }
