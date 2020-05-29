@@ -1,0 +1,22 @@
+<root string="hello world" boolean="true" int="32" long="64" double="2.2" float="1.1" date="1984-08-17T21:42:27.639-05:00" empty="" interpolated="object.string > ${object.string} and list.1.string > ${list.1.string}" uninterpolated="object.string.notFound > ${object.string.notFound} and list.1.string.notFound > ${list.1.string.notFound}">
+    <strings>hello</strings>
+    <strings>goodbye</strings>
+    <soloString>solo</soloString>
+    <object string="hello world" boolean="true" int="32" long="64" double="2.2" float="1.1" date="1984-08-17T21:42:27.639-05:00" empty="">
+        <strings>hello</strings>
+        <strings>goodbye</strings>
+        <soloString>solo</soloString>
+    </object>
+    <list>
+        <object string="hello world" boolean="true" int="32" long="64" double="2.2" float="1.1" date="1984-08-17T21:42:27.639-05:00" empty="">
+            <strings>hello</strings>
+            <strings>goodbye</strings>
+            <soloString>solo</soloString>
+        </object>
+        <object string="hello world" boolean="true" int="32" long="64" double="2.2" float="1.1" date="1984-08-17T21:42:27.639-05:00" empty="">
+            <strings>hello</strings>
+            <strings>goodbye</strings>
+            <soloString>solo</soloString>
+        </object>
+    </list>
+</root>

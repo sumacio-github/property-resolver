@@ -4,16 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.sumac</groupId>
-        <artifactId>sumac-parent</artifactId>
-        <version>1</version>
+        <artifactId>property-resolver-parent</artifactId>
+        <version>0.0.6</version>
     </parent>
-    <artifactId>property-resolver-parent</artifactId>
-    <version>0.0.6</version>
-    <packaging>pom</packaging>
+    <artifactId>property-resolver</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>A library that adds convenience methods to java.util.properties and simplifies reading properties from
-        multiple sources
-    </description>
+    <description>A library that simplifies reading properties from multiple sources</description>
     <url>https://github.com/sumacio-github/property-resolver</url>
     <organization>
         <name>sumac.io</name>
@@ -50,15 +46,12 @@
         <developerConnection>scm:git:ssh://github.com/sumacio-github/property-resolver.git</developerConnection>
         <url>https://github.com/sumacio-github/property-resolver</url>
     </scm>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <fasterxml.version>2.11.0</fasterxml.version>
-        <typesafe.version>1.4.0</typesafe.version>
-    </properties>
-    <modules>
-        <module>property-resolver</module>
-        <module>property-helper</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>io.sumac</groupId>
+            <artifactId>sumac-junit5</artifactId>
+            <version>${sumac-junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
