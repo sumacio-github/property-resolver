@@ -1,5 +1,7 @@
 package io.sumac.propertyresolver.annotations;
 
+import io.sumac.propertyresolver.utility.PreCondition;
+
 import java.lang.annotation.*;
 
 /**
@@ -8,7 +10,7 @@ import java.lang.annotation.*;
  * A parameter annotated with NotNull is not expected to handle {@code null} as a valid input and may result in a {@code NullPointerException} or {@code IllegalArgumentException} if a null value is given.
  *
  * @author ross
- * @see io.sumac.propertyresolver.utility.PreCondition
+ * @see PreCondition
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)

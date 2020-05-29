@@ -3,8 +3,6 @@ package io.sumac.propertyresolver.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Model extends Fields {

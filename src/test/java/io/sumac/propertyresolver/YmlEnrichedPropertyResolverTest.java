@@ -9,8 +9,8 @@ public class YmlEnrichedPropertyResolverTest extends AbstractEnrichedPropertyRes
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException {
-        systemUnderTest = new ExtendedEnrichedProperties();
-        systemUnderTest.loadFromClasspath("test.yml");
+        systemUnderTest = new Properties();
+        PropertiesHelper.loadFromClasspath(systemUnderTest, "test.yml");
     }
 
 }

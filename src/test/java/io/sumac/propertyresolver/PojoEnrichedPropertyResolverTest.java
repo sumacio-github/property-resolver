@@ -16,7 +16,7 @@ public class PojoEnrichedPropertyResolverTest extends AbstractEnrichedPropertyRe
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException, ParseException {
-        systemUnderTest = new ExtendedEnrichedProperties();
+        systemUnderTest = new Properties();
         Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse("1984-08-17T21:42:27.639-05:00");
         Fields fields = new Fields();
         fields.setStringVal("hello world");
@@ -42,7 +42,7 @@ public class PojoEnrichedPropertyResolverTest extends AbstractEnrichedPropertyRe
         model.setList(Arrays.asList(fields, fields));
         model.setInterpolated("object.string > ${object.string} and list.1.string > ${list.1.string}");
         model.setUninterpolated("object.string.notFound > ${object.string.notFound} and list.1.string.notFound > ${list.1.string.notFound}");
-        systemUnderTest.loadFromObject(model);
+        PropertiesHelper.loadFromObject(systemUnderTest, model);
 
     }
 

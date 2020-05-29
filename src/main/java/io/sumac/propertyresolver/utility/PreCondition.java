@@ -1,9 +1,11 @@
 package io.sumac.propertyresolver.utility;
 
+import io.sumac.propertyresolver.annotations.NotNull;
+
 import java.util.Objects;
 
 /**
- * This PreCondition class is intended to be used in conjunction with the {@link io.sumac.propertyresolver.annotations.NotNull} annotation to validate that
+ * This PreCondition class is intended to be used in conjunction with the {@link NotNull} annotation to validate that
  * the contract of a method is being followed properly. In this case a pre-condition failure is likely the result of improper usage or contract conditions
  * not being satisfied and should be investigated as a potential defect.
  * <p />

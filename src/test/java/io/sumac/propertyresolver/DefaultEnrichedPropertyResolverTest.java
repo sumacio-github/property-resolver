@@ -9,7 +9,7 @@ public class DefaultEnrichedPropertyResolverTest extends AbstractEnrichedPropert
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException {
-        systemUnderTest = new ExtendedEnrichedProperties();
-        systemUnderTest.loadFromClasspath("test.txt");
+        systemUnderTest = new Properties();
+        PropertiesHelper.loadFromClasspath(systemUnderTest, "test.txt");
     }
 }

@@ -2,36 +2,55 @@ package io.sumac.propertyresolver;
 
 import io.sumac.propertyresolver.utility.IOThrowingSupplier;
 import io.sumac.propertyresolver.utility.PreCondition;
+import io.sumac.propertyresolver.annotations.Interpolates;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Extension of {@code java.util.Properties} that adds some additional
- * convenience methods.
+ * convenience methods such as additional property getters that can cast the result to primitive types like int or double,
+ * methods that return an {@code Optional} object instead of a nullable value,
+ * and methods that will automatically interpolate embedded placeholder keys within a property value.
+ * <p>
+ * For example, consider the following properties file:
+ * <pre>
+ *     firstName=Bill
+ *     lastName=Dent
+ *     fullName=${lastName}, ${fullName}
+ * </pre>
+ * <p>
+ * The following code:
+ *
+ * <pre>
+ *     Properties props = ...
+ *     System.out.println(props.getString("fullName").get());
+ * </pre>
+ * <p>
+ * ... will output "<code>Dent, Bill</code>" as the placeholders ${lastName} and ${firstName} are automatically interpolated.
  *
  * @author ross
  */
-public class EnrichedProperties extends Properties {
+public class Properties extends java.util.Properties {
 
     private Function<String, String> decryptor = (s) -> s; // placeholder
     private Function<String, String> interpolator = (s) -> InterpolationHelper.interpolate(this, s);
 
-    public EnrichedProperties() {
+    public Properties() {
         super();
     }
 
-    public EnrichedProperties(Properties properties) {
+    public Properties(Map<?, ?> properties) {
         super();
         putAll(properties);
     }
 
+    @Interpolates
     public Optional<String> getString(String key) {
         if (this.containsKey(key)) {
             return Optional.of(decryptor.apply(interpolate(this.getProperty(key))));
@@ -40,11 +59,13 @@ public class EnrichedProperties extends Properties {
         }
     }
 
+    @Interpolates
     public String getStringRequired(String key) {
         rejectIfRequiredKeyNotFound(key);
         return decryptor.apply(interpolate(this.getProperty(key)));
     }
 
+    @Interpolates
     public Optional<Boolean> getBoolean(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toBoolean(decryptor.apply(interpolate(this.getProperty(key)))));
@@ -53,11 +74,13 @@ public class EnrichedProperties extends Properties {
         }
     }
 
+    @Interpolates
     public boolean getBooleanRequired(String key) {
         rejectIfRequiredKeyNotFound(key);
         return toBoolean(decryptor.apply(interpolate(this.getProperty(key))));
     }
 
+    @Interpolates
     public Optional<Integer> getInt(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toInt(decryptor.apply(interpolate(this.getProperty(key)))));
@@ -66,11 +89,13 @@ public class EnrichedProperties extends Properties {
         }
     }
 
+    @Interpolates
     public int getIntRequired(String key) {
         rejectIfRequiredKeyNotFound(key);
         return toInt(decryptor.apply(interpolate(this.getProperty(key))));
     }
 
+    @Interpolates
     public Optional<Long> getLong(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toLong(decryptor.apply(interpolate(this.getProperty(key)))));
@@ -79,11 +104,13 @@ public class EnrichedProperties extends Properties {
         }
     }
 
+    @Interpolates
     public long getLongRequired(String key) {
         rejectIfRequiredKeyNotFound(key);
         return toLong(decryptor.apply(interpolate(this.getProperty(key))));
     }
 
+    @Interpolates
     public Optional<Double> getDouble(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toDouble(decryptor.apply(interpolate(this.getProperty(key)))));
@@ -92,11 +119,13 @@ public class EnrichedProperties extends Properties {
         }
     }
 
+    @Interpolates
     public double getDoubleRequired(String key) {
         rejectIfRequiredKeyNotFound(key);
         return toDouble(decryptor.apply(interpolate(this.getProperty(key))));
     }
 
+    @Interpolates
     public Optional<Float> getFloat(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toFloat(decryptor.apply(interpolate(this.getProperty(key)))));
@@ -105,11 +134,13 @@ public class EnrichedProperties extends Properties {
         }
     }
 
+    @Interpolates
     public float getFloatRequired(String key) {
         rejectIfRequiredKeyNotFound(key);
         return toFloat(decryptor.apply(interpolate(this.getProperty(key))));
     }
 
+    @Interpolates
     public Optional<Date> getDate(String key, String pattern) {
         if (this.containsKey(key)) {
             return Optional.of(toDate(decryptor.apply(interpolate(this.getProperty(key))), pattern));
@@ -118,11 +149,13 @@ public class EnrichedProperties extends Properties {
         }
     }
 
+    @Interpolates
     public Date getDateRequired(String key, String pattern) {
         rejectIfRequiredKeyNotFound(key);
         return toDate(decryptor.apply(interpolate(this.getProperty(key))), pattern);
     }
 
+    @Interpolates
     public void show() {
         TreeSet<String> sortedKeys = new TreeSet<>(this.stringPropertyNames());
         sortedKeys.forEach(k -> System.out.println(k + "=" + interpolate(this.getProperty(k))));
@@ -136,12 +169,12 @@ public class EnrichedProperties extends Properties {
         }
     }
 
-    public void loadFromSource(IOThrowingSupplier<Properties> source) throws IOException {
+    public void loadFromSource(IOThrowingSupplier<java.util.Properties> source) throws IOException {
         loadFromSource(Collections.singletonList(source));
     }
 
-    public void loadFromSource(List<IOThrowingSupplier<Properties>> sources) throws IOException {
-        for (IOThrowingSupplier<Properties> source : sources) {
+    public void loadFromSource(List<IOThrowingSupplier<java.util.Properties>> sources) throws IOException {
+        for (IOThrowingSupplier<java.util.Properties> source : sources) {
             putAll(source.get());
         }
     }
@@ -154,9 +187,9 @@ public class EnrichedProperties extends Properties {
         this.interpolator = interpolator;
     }
 
-    public EnrichedProperties filterByRegex(String regex) {
+    public Properties filterByRegex(String regex) {
         Pattern pattern = Pattern.compile(regex);
-        EnrichedProperties result = new EnrichedProperties();
+        Properties result = new Properties();
         this.forEach((k, v) -> {
             Matcher matcher = pattern.matcher(k.toString());
             if (matcher.matches()) {
@@ -166,8 +199,8 @@ public class EnrichedProperties extends Properties {
         return result;
     }
 
-    public EnrichedProperties filterByStartsWith(String keyStartsWith) {
-        EnrichedProperties result = new EnrichedProperties();
+    public Properties filterByStartsWith(String keyStartsWith) {
+        Properties result = new Properties();
         this.forEach((k, v) -> {
             if (k instanceof String && k.toString().startsWith(keyStartsWith + ".")) {
                 result.put(k, v);
@@ -176,8 +209,8 @@ public class EnrichedProperties extends Properties {
         return result;
     }
 
-    public EnrichedProperties getChildProperties(String parentPropertyKey) {
-        EnrichedProperties result = new EnrichedProperties();
+    public Properties getChildProperties(String parentPropertyKey) {
+        Properties result = new Properties();
         this.forEach((k, v) -> {
             if (k instanceof String && k.toString().startsWith(parentPropertyKey)) {
                 result.put(k.toString().replace(parentPropertyKey + ".", ""), v);
@@ -192,6 +225,7 @@ public class EnrichedProperties extends Properties {
         }
     }
 
+    @Interpolates
     public String interpolate(String text) {
         return interpolator.apply(text);
     }
@@ -238,7 +272,8 @@ public class EnrichedProperties extends Properties {
         private static final String STARTS_WITH = "${";
         private static final String ENDS_WITH = "}";
 
-        static String interpolate(Properties properties, String text) {
+        @Interpolates
+        static String interpolate(java.util.Properties properties, String text) {
             int startindex = text.indexOf(STARTS_WITH);
             if (startindex == -1) {
                 return text;

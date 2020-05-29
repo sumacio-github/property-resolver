@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.is;
 
 public abstract class AbstractEnrichedPropertyResolverTest {
 
-    protected ExtendedEnrichedProperties systemUnderTest;
+    protected Properties systemUnderTest;
 
     protected static final String STRING_KEY = "string";
     protected static final String INT_KEY = "int";
@@ -264,7 +264,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     }
 
     private void testGetChildProperties(String parent) {
-        EnrichedProperties props = systemUnderTest.getChildProperties(parent);
+        Properties props = systemUnderTest.getChildProperties(parent);
         assertThat(parent + STRING_KEY, props.getStringRequired(STRING_KEY), is(STRING_VALUE));
         assertThat(parent + INT_KEY, props.getStringRequired(INT_KEY), is(INT_STRING_VALUE));
         assertThat(parent + LONG_KEY, props.getStringRequired(LONG_KEY), is(LONG_STRING_VALUE));
@@ -286,7 +286,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     }
 
     private void testFilterByStartsWith(String parent) {
-        EnrichedProperties props = systemUnderTest.filterByStartsWith(parent);
+        Properties props = systemUnderTest.filterByStartsWith(parent);
         assertThat(parent + STRING_KEY, props.getStringRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
         assertThat(parent + INT_KEY, props.getStringRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
         assertThat(parent + LONG_KEY, props.getStringRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
@@ -308,7 +308,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     }
 
     private void testFilterByRegex(String parent, String regex) {
-        EnrichedProperties props = systemUnderTest.filterByRegex(regex);
+        Properties props = systemUnderTest.filterByRegex(regex);
         assertThat(parent + STRING_KEY, props.getStringRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
         assertThat(parent + INT_KEY, props.getStringRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
         assertThat(parent + LONG_KEY, props.getStringRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
@@ -329,9 +329,23 @@ public abstract class AbstractEnrichedPropertyResolverTest {
         assertThat(systemUnderTest.interpolate(text), is(expected));
     }
 
+//    @Test
+//    public void testInterpolate_withDefaults() throws IOException {
+//        String text = SimpleTextFileReader.readFromClasspath("interpolate_with_default_1.txt");
+//        String expected = SimpleTextFileReader.readFromClasspath("interpolate_with_default_2.txt");
+//        assertThat(systemUnderTest.interpolate(text), is(expected));
+//    }
+//
+//    @Test
+//    public void testInterpolate_withDefaultsNotFound() throws IOException {
+//        String text = SimpleTextFileReader.readFromClasspath("interpolate_not_found_with_default_1.txt");
+//        String expected = SimpleTextFileReader.readFromClasspath("interpolate_not_found_with_default_2.txt");
+//        assertThat(systemUnderTest.interpolate(text), is(expected));
+//    }
+
     @Test
     public void testBind() throws IOException, ParseException {
-        Model model = systemUnderTest.bind(Model.class);
+        Model model = PropertiesHelper.bind(systemUnderTest, Model.class);
         validateFields(model);
         validateFields(model.getObjectVal());
         validateFields(model.getList().get(0));
