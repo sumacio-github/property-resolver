@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.sumac</groupId>
         <artifactId>property-resolver-parent</artifactId>
-        <version>0.0.6</version>
+        <version>1.0.7</version>
     </parent>
     <artifactId>property-helper</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>io.sumac</groupId>
             <artifactId>property-resolver</artifactId>
-            <version>0.0.6</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
