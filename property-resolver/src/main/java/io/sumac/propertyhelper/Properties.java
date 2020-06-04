@@ -1,5 +1,6 @@
 package io.sumac.propertyhelper;
 
+import io.sumac.propertyhelper.annotations.NotNull;
 import io.sumac.propertyhelper.utility.IOThrowingSupplier;
 import io.sumac.propertyhelper.utility.PreCondition;
 import io.sumac.propertyhelper.annotations.Interpolates;
@@ -41,13 +42,17 @@ public class Properties extends java.util.Properties {
     private Function<String, String> decryptor = (s) -> s; // placeholder
     private Function<String, String> interpolator = (s) -> InterpolationHelper.interpolate(this, s);
 
+    public static Properties from(Map<?,?> map) {
+        return new Properties(map);
+    }
+
     public Properties() {
         super();
     }
 
     public Properties(Map<?, ?> properties) {
         super();
-        putAll(properties);
+        loadFromMap(properties);
     }
 
     @Interpolates
@@ -161,6 +166,7 @@ public class Properties extends java.util.Properties {
         sortedKeys.forEach(k -> System.out.println(k + "=" + interpolate(this.getProperty(k))));
     }
 
+    @Interpolates
     public void show(IOThrowingSupplier<String> customFormatter) {
         try {
             System.out.println(interpolate(PreCondition.Result.notNull(customFormatter.get())));
@@ -169,13 +175,18 @@ public class Properties extends java.util.Properties {
         }
     }
 
+    public void loadFromMap(@NotNull Map<?,?> map) {
+        PreCondition.Parameter.notNull(map);
+        this.putAll(map);
+    }
+
     public void loadFromSource(IOThrowingSupplier<java.util.Properties> source) throws IOException {
         loadFromSource(Collections.singletonList(source));
     }
 
     public void loadFromSource(List<IOThrowingSupplier<java.util.Properties>> sources) throws IOException {
         for (IOThrowingSupplier<java.util.Properties> source : sources) {
-            putAll(source.get());
+            loadFromMap(source.get());
         }
     }
 
