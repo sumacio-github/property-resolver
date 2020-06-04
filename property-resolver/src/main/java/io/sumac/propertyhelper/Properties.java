@@ -1,6 +1,7 @@
 package io.sumac.propertyhelper;
 
 import io.sumac.propertyhelper.annotations.NotNull;
+import io.sumac.propertyhelper.utility.Executable;
 import io.sumac.propertyhelper.utility.IOThrowingSupplier;
 import io.sumac.propertyhelper.utility.PreCondition;
 import io.sumac.propertyhelper.annotations.Interpolates;
@@ -41,8 +42,11 @@ public class Properties extends java.util.Properties {
 
     private Function<String, String> decryptor = (s) -> s; // placeholder
     private Function<String, String> interpolator = (s) -> InterpolationHelper.interpolate(this, s);
+    private Executable validator = () -> {
+        throw new IllegalStateException("No registered validator. See setValidator(Executable validator) method.");
+    }; // placeholder
 
-    public static Properties from(Map<?,?> map) {
+    public static Properties from(Map<?, ?> map) {
         return new Properties(map);
     }
 
@@ -175,7 +179,7 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    public void loadFromMap(@NotNull Map<?,?> map) {
+    public void loadFromMap(@NotNull Map<?, ?> map) {
         PreCondition.Parameter.notNull(map);
         this.putAll(map);
     }
@@ -190,12 +194,69 @@ public class Properties extends java.util.Properties {
         }
     }
 
+    public void assertContainsKey(String... key) {
+        assertContainsKeys(Arrays.asList(key));
+    }
+
+    public void assertContainsKeys(List<String> keys) {
+        validate(() -> {
+            List<String> missingKeys = new ArrayList<String>();
+            keys.forEach(key -> {
+                if (!containsKey(key)) {
+                    missingKeys.add(key);
+                }
+            });
+            if (!missingKeys.isEmpty()) {
+                throw PropertyResolverException.propertiesNotFound(missingKeys);
+            }
+        });
+    }
+
+    /**
+     * This method will execute a custom validator that should throw a {@code RuntimeException} if this properties object is not valid.
+     * For example, this method could be used to validate the properties during a startup phase and immediately throw an exception
+     * if a property key required for the program to function is missing.
+     * <p />
+     * Example usage:
+     * <pre>
+     *     Properties props = ...
+     *     props.validate(() -> {
+     *        if (!props.containsKey("service.url") {
+     *            throw new IllegalStateException("Missing property: 'service.url'");
+     *        }
+     *     });
+     * </pre>
+     * @param validator functionInterface holding the validation logic.
+     */
+    public void validate(Executable validator) {
+        try {
+            validator.execute();
+        } catch (PropertyResolverException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw PropertyResolverException.validationFailure(e);
+        }
+    }
+
+    public void validate() {
+        validate(validator);
+    }
+
     public void setDecryptor(Function<String, String> decryptor) {
         this.decryptor = decryptor;
     }
 
     public void setInterpolator(Function<String, String> interpolator) {
         this.interpolator = interpolator;
+    }
+
+    /**
+     * The {@code Executable} provided should validate the properties in the map and should throw some kind of RuntimeException,
+     * probably IllegalStateException, if some requirement is not satisfied.
+     * @param validator functionalInterface containing validation logic
+     */
+    public void setValidator(Executable validator) {
+        this.validator = validator;
     }
 
     public Properties filterByRegex(String regex) {

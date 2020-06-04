@@ -1,44 +1,51 @@
 package io.sumac.propertyhelper;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class PropertyResolverException extends RuntimeException {
 
-	private static final long serialVersionUID = 5679265155061006371L;
+    protected PropertyResolverException(String msg) {
+        super(msg);
+    }
 
-	protected PropertyResolverException(String msg) {
-		super(msg);
-	}
+    protected PropertyResolverException(String msg, Throwable t) {
+        super(msg, t);
+    }
 
-	protected PropertyResolverException(String msg, Throwable t) {
-		super(msg, t);
-	}
+    public static PropertyResolverException from(IOException e) {
+        return new UnexpectedIOException("An unexpected " + e.getClass().getName() + " occurred: " + e.getMessage(), e);
+    }
 
-	public static PropertyResolverException from(IOException e) {
-		return new UnexpectedIOException("An unexpected " + e.getClass().getName() + " occurred: " + e.getMessage(), e);
-	}
+    public static PropertyResolverException propertiesNotFound(List<String> propertyKeys) {
+        return new PropertyNotFoundException("Property not found: '" + propertyKeys + "'");
+    }
 
-	public static PropertyResolverException propertyNotFound(String propertyKey) {
-		return new PropertyNotFoundException("Property not found: '" + propertyKey + "'");
-	}
+    public static PropertyResolverException propertyNotFound(String... propertyKeys) {
+        return propertiesNotFound(Arrays.asList(propertyKeys));
+    }
 
-	static class UnexpectedIOException extends PropertyResolverException {
+    public static PropertyResolverException validationFailure(Throwable t) {
+        return new ValidationException("Validation error", t);
+    }
 
-		private static final long serialVersionUID = -6823604987227128796L;
+    static class UnexpectedIOException extends PropertyResolverException {
+        private UnexpectedIOException(String msg, Throwable t) {
+            super(msg, t);
+        }
+    }
 
-		private UnexpectedIOException(String msg, Throwable t) {
-			super(msg, t);
-		}
-	}
-	
-	static class PropertyNotFoundException extends PropertyResolverException {
+    static class PropertyNotFoundException extends PropertyResolverException {
+        protected PropertyNotFoundException(String msg) {
+            super(msg);
+        }
+    }
 
-		private static final long serialVersionUID = 2032509051450805671L;
-
-		protected PropertyNotFoundException(String msg) {
-			super(msg);
-		}
-		
-	}
+    static class ValidationException extends PropertyResolverException {
+        protected ValidationException(String msg, Throwable t) {
+            super(msg, t);
+        }
+    }
 
 }
