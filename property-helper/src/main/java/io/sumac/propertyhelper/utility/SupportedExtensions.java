@@ -8,11 +8,11 @@ public enum SupportedExtensions {
             return PROPERTIES;
         }
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
-        if (extension.equals("XML")) {
+        if ("XML".equals(extension)) {
             return XML;
-        } else if (extension.equals("JSON")) {
+        } else if ("JSON".equals(extension)) {
             return JSON;
-        } else if (extension.equals("YML") || extension.equals("YAML")) {
+        } else if ("YML".equals(extension) || "YAML".equals(extension)) {
             return YAML;
         } else {
             return PROPERTIES;
