@@ -1,7 +1,9 @@
 package io.sumac.propertyhelper;
 
+import io.sumac.propertyhelper.utility.Executable;
 import io.sumac.propertyhelper.utility.SimpleTextFileReader;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -14,10 +16,11 @@ import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 
-public abstract class AbstractEnrichedPropertyResolverTest {
+public class PropertiesTest {
 
-    protected Properties systemUnderTest;
+    protected Properties systemUnderTest = new Properties();
 
     protected static final String STRING_KEY = "string";
     protected static final String INT_KEY = "int";
@@ -72,16 +75,11 @@ public abstract class AbstractEnrichedPropertyResolverTest {
         }
     }
 
-    protected String readFromInputStream(InputStream inputStream) throws IOException {
-        StringBuilder resultStringBuilder = new StringBuilder();
-        try (BufferedReader br
-                     = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                resultStringBuilder.append(line).append("\n");
-            }
-        }
-        return resultStringBuilder.toString();
+    @BeforeEach
+    public void setup() throws IOException {
+        InputStream in = getClass().getClassLoader().getResourceAsStream("test.properties");
+        systemUnderTest.load(in);
+        in.close();
     }
 
     @Test
@@ -338,5 +336,31 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 //        String expected = SimpleTextFileReader.readFromClasspath("interpolate_not_found_with_default_2.txt");
 //        assertThat(systemUnderTest.interpolate(text), is(expected));
 //    }
+
+    @Test
+    public void testValidate() {
+        Exception e = Assertions.assertThrows(PropertyResolverException.ValidationException.class, () -> systemUnderTest.validate());
+        assertThat(e.getCause(), isA(IllegalStateException.class));
+        assertThat(e.getCause().getMessage(), is("No registered validator. See setValidator(Executable validator) method."));
+        Executable validator = () -> {
+            if (!systemUnderTest.containsKey("something")) {
+                throw new IllegalArgumentException("invalid");
+            }
+        };
+        e = Assertions.assertThrows(PropertyResolverException.ValidationException.class, () -> systemUnderTest.validate(validator));
+        assertThat(e.getCause(), isA(IllegalArgumentException.class));
+        assertThat(e.getCause().getMessage(), is("invalid"));
+        systemUnderTest.setValidator(validator);
+        e = Assertions.assertThrows(PropertyResolverException.ValidationException.class, () -> systemUnderTest.validate());
+        assertThat(e.getCause(), isA(IllegalArgumentException.class));
+        assertThat(e.getCause().getMessage(), is("invalid"));
+    }
+
+    @Test
+    public void testAssertContainsKey() {
+        systemUnderTest.assertContainsKey("string");
+        Exception e = Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class, () -> systemUnderTest.assertContainsKey("string", "fake"));
+        assertThat(e.getMessage(), is("Property not found: '[fake]'"));
+    }
 
 }
