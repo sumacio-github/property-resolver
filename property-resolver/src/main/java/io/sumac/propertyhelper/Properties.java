@@ -216,7 +216,7 @@ public class Properties extends java.util.Properties {
      * This method will execute a custom validator that should throw a {@code RuntimeException} if this properties object is not valid.
      * For example, this method could be used to validate the properties during a startup phase and immediately throw an exception
      * if a property key required for the program to function is missing.
-     * <p />
+     * <p/>
      * Example usage:
      * <pre>
      *     Properties props = ...
@@ -226,6 +226,7 @@ public class Properties extends java.util.Properties {
      *        }
      *     });
      * </pre>
+     *
      * @param validator functionInterface holding the validation logic.
      */
     public void validate(Executable validator) {
@@ -253,6 +254,7 @@ public class Properties extends java.util.Properties {
     /**
      * The {@code Executable} provided should validate the properties in the map and should throw some kind of RuntimeException,
      * probably IllegalStateException, if some requirement is not satisfied.
+     *
      * @param validator functionalInterface containing validation logic
      */
     public void setValidator(Executable validator) {
@@ -343,9 +345,12 @@ public class Properties extends java.util.Properties {
 
         private static final String STARTS_WITH = "${";
         private static final String ENDS_WITH = "}";
+        private static final String DEFAULT_DELIMITER = ":";
+        private static final String DEFAULT_VALUE = "";
 
         @Interpolates
         static String interpolate(java.util.Properties properties, String text) {
+
             int startindex = text.indexOf(STARTS_WITH);
             if (startindex == -1) {
                 return text;
@@ -357,9 +362,35 @@ public class Properties extends java.util.Properties {
                 return text;
             }
             int end = endindex + start;
-            String candidate = text.substring(start, end);
-            if (properties.containsKey(candidate)) {
-                return interpolate(properties, text.replace(STARTS_WITH + candidate + ENDS_WITH, properties.getProperty(candidate)));
+            String placeholder = text.substring(start, end);
+
+            if (placeholder.contains(STARTS_WITH)) {
+                if (!placeholder.contains(DEFAULT_DELIMITER) || placeholder.substring(0, placeholder.indexOf(DEFAULT_DELIMITER)).contains(STARTS_WITH)) {
+                    throw PropertyResolverException.keyNestedInsideKey();
+                } else {
+                    throw PropertyResolverException.keyNestedInsideDefault();
+                }
+            }
+
+            if (properties.containsKey(placeholder)) {
+                return interpolate(properties, text.replace(STARTS_WITH + placeholder + ENDS_WITH, properties.getProperty(placeholder)));
+            } else if (placeholder.contains(DEFAULT_DELIMITER)) {
+                String key = placeholder.substring(0, placeholder.indexOf(DEFAULT_DELIMITER));
+
+                // placeholder default is zero length string
+                if (placeholder.indexOf(DEFAULT_DELIMITER) == placeholder.length() - 1) {
+                    if (properties.containsKey(key)) {
+                        return interpolate(properties, text.replace(STARTS_WITH + key + DEFAULT_DELIMITER + ENDS_WITH, properties.getProperty(key)));
+                    } else {
+                        return interpolate(properties, text.replace(STARTS_WITH + placeholder + ENDS_WITH, DEFAULT_VALUE));
+                    }
+                }
+                String placeholderDefault = placeholder.substring(placeholder.indexOf(DEFAULT_DELIMITER) + 1);
+                if (properties.containsKey(key)) {
+                    return interpolate(properties, text.replace(STARTS_WITH + key + DEFAULT_DELIMITER + placeholderDefault + ENDS_WITH, properties.getProperty(key)));
+                } else {
+                    return interpolate(properties, text.replace(STARTS_WITH + placeholder + ENDS_WITH, placeholderDefault));
+                }
             } else {
                 return text.substring(0, start) + interpolate(properties, text.substring(start));
             }

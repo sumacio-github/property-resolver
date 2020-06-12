@@ -30,6 +30,14 @@ public abstract class PropertyResolverException extends RuntimeException {
         return new ValidationException("Validation error", t);
     }
 
+    public static PropertyResolverException keyNestedInsideKey() {
+        return new InterpolationErrorException("Interpolation error: Cannot nest a placeholder key inside of a property key.");
+    }
+
+    public static PropertyResolverException keyNestedInsideDefault() {
+        return new InterpolationErrorException("Interpolation error: Cannot nest a placeholder key inside of a default value.");
+    }
+
     static class UnexpectedIOException extends PropertyResolverException {
         private UnexpectedIOException(String msg, Throwable t) {
             super(msg, t);
@@ -45,6 +53,12 @@ public abstract class PropertyResolverException extends RuntimeException {
     static class ValidationException extends PropertyResolverException {
         protected ValidationException(String msg, Throwable t) {
             super(msg, t);
+        }
+    }
+
+    static class InterpolationErrorException extends PropertyResolverException {
+        protected InterpolationErrorException(String msg) {
+            super(msg);
         }
     }
 

@@ -42,5 +42,4 @@ list.2.empty=${list.2.empty}
 list.2.strings.1=${list.2.strings.1}
 list.2.strings.2=${list.2.strings.2}
 list.2.soloString.1=${list.2.soloString.1}
-interpolated=${interpolated}
-uninterpolated=${uninterpolated}
+multikeys=${list.2.strings.1} and ${list.2.strings.2}

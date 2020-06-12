@@ -5,9 +5,9 @@
     <parent>
         <groupId>io.sumac</groupId>
         <artifactId>property-resolver-parent</artifactId>
-        <version>1.0.7</version>
+        <version>0.0.7</version>
     </parent>
-    <artifactId>property-helper</artifactId>
+    <artifactId>property-utils</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>A library that simplifies reading properties from multiple sources</description>
     <url>https://github.com/sumacio-github/property-resolver</url>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>io.sumac</groupId>
             <artifactId>property-resolver</artifactId>
-            <version>1.0.7</version>
+            <version>0.0.7</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

@@ -323,19 +323,19 @@ public class PropertiesTest {
         assertThat(systemUnderTest.interpolate(text), is(expected));
     }
 
-//    @Test
-//    public void testInterpolate_withDefaults() throws IOException {
-//        String text = SimpleTextFileReader.readFromClasspath("interpolate_with_default_1.txt");
-//        String expected = SimpleTextFileReader.readFromClasspath("interpolate_with_default_2.txt");
-//        assertThat(systemUnderTest.interpolate(text), is(expected));
-//    }
-//
-//    @Test
-//    public void testInterpolate_withDefaultsNotFound() throws IOException {
-//        String text = SimpleTextFileReader.readFromClasspath("interpolate_not_found_with_default_1.txt");
-//        String expected = SimpleTextFileReader.readFromClasspath("interpolate_not_found_with_default_2.txt");
-//        assertThat(systemUnderTest.interpolate(text), is(expected));
-//    }
+    @Test
+    public void testInterpolate_withDefaults() throws IOException {
+        String text = SimpleTextFileReader.readFromClasspath("interpolate_with_default_1.txt");
+        String expected = SimpleTextFileReader.readFromClasspath("interpolate_with_default_2.txt");
+        assertThat(systemUnderTest.interpolate(text), is(expected));
+    }
+
+    @Test
+    public void testInterpolate_withDefaultsNotFound() throws IOException {
+        String text = SimpleTextFileReader.readFromClasspath("interpolate_not_found_with_default_1.txt");
+        String expected = SimpleTextFileReader.readFromClasspath("interpolate_not_found_with_default_2.txt");
+        assertThat(systemUnderTest.interpolate(text), is(expected));
+    }
 
     @Test
     public void testValidate() {
@@ -361,6 +361,16 @@ public class PropertiesTest {
         systemUnderTest.assertContainsKey("string");
         Exception e = Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class, () -> systemUnderTest.assertContainsKey("string", "fake"));
         assertThat(e.getMessage(), is("Property not found: '[fake]'"));
+    }
+
+    @Test
+    public void testInterpolateKeyNested() {
+        Exception e = Assertions.assertThrows(PropertyResolverException.InterpolationErrorException.class, () -> systemUnderTest.interpolate("1${${test}}2"));
+        assertThat(e.getMessage(), is("Interpolation error: Cannot nest a placeholder key inside of a property key."));
+        e = Assertions.assertThrows(PropertyResolverException.InterpolationErrorException.class, () -> systemUnderTest.interpolate("1${${test}:}2"));
+        assertThat(e.getMessage(), is("Interpolation error: Cannot nest a placeholder key inside of a property key."));
+        e = Assertions.assertThrows(PropertyResolverException.InterpolationErrorException.class, () -> systemUnderTest.interpolate("1${:${test}}2"));
+        assertThat(e.getMessage(), is("Interpolation error: Cannot nest a placeholder key inside of a default value."));
     }
 
 }
