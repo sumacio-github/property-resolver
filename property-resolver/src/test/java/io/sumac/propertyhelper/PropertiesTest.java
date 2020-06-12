@@ -1,5 +1,6 @@
 package io.sumac.propertyhelper;
 
+import io.sumac.propertyhelper.model.*;
 import io.sumac.propertyhelper.utility.Executable;
 import io.sumac.propertyhelper.utility.SimpleTextFileReader;
 import org.junit.jupiter.api.Assertions;
@@ -13,12 +14,21 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class PropertiesTest {
+
+    private static final Logger LOGGER = LogManager.getLogger(PropertiesTest.class);
 
     protected Properties systemUnderTest = new Properties();
 
@@ -371,6 +381,234 @@ public class PropertiesTest {
         assertThat(e.getMessage(), is("Interpolation error: Cannot nest a placeholder key inside of a property key."));
         e = Assertions.assertThrows(PropertyResolverException.InterpolationErrorException.class, () -> systemUnderTest.interpolate("1${:${test}}2"));
         assertThat(e.getMessage(), is("Interpolation error: Cannot nest a placeholder key inside of a default value."));
+    }
+
+    @Test
+    public void toTest_fields() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        Model1 output = properties.to(Model1.class);
+        validate(output);
+    }
+
+    @Test
+    public void toTest_methods() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        Model2 output = properties.to(Model2.class);
+        validate(output);
+    }
+
+    @Test
+    public void toTest_parameters() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        Model3 output = properties.to(Model3.class);
+        validate(output);
+    }
+
+    @Test
+    public void fillInTest_fields() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        Model1 model = new Model1();
+        properties.fillIn(model);
+        validate(model);
+    }
+
+    @Test
+    public void fillInTest_methods() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        Model2 model = new Model2();
+        properties.fillIn(model);
+        validate(model);
+    }
+
+    @Test
+    public void toTest_missingFields() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model4.class));
+        assertThat(output.getMessage(), is("Property not found: '[test.not_found.string]'"));
+    }
+
+    @Test
+    public void toTest_missingMethods() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model5.class));
+        assertThat(output.getMessage(), is("Property not found: '[test.not_found.string]'"));
+    }
+
+    @Test
+    public void toTest_missingParameters() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model6.class));
+        assertThat(output.getMessage(), is("Property not found: '[test.not_found.string]'"));
+    }
+
+    @Test
+    public void toTest_optionalFields() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        Model7 output = properties.to(Model7.class);
+        assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
+                () -> assertThat(output.getNotFoundString(), nullValue()));
+    }
+
+    @Test
+    public void toTest_optionalMethods() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        Model8 output = properties.to(Model8.class);
+        assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
+                () -> assertThat(output.getNotFoundString(), nullValue()));
+    }
+
+    @Test
+    public void toTest_optionalParameters() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        Model9 output = properties.to(Model9.class);
+        assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
+                () -> assertThat(output.getNotFoundString(), nullValue()));
+    }
+
+    @Test
+    public void toTestInvalidTypeField() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model10.class));
+        assertThat(output.getMessage(), is("Field type not supported: class java.util.Date"));
+    }
+
+    @Test
+    public void toTestInvalidTypeMethod() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model11.class));
+        assertThat(output.getMessage(), is("Parameter type not supported: class java.util.Date"));
+    }
+
+    @Test
+    public void toTestInvalidTypeParameters() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model12.class));
+        assertThat(output.getMessage(), is("Parameter type not supported: class java.util.Date"));
+    }
+
+    @Test
+    public void toTestTooManyConstructors() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model13.class));
+        assertThat(output.getMessage(), is("Too many constructors: 2"));
+    }
+
+    @Test
+    public void toTestParameterArgNotAnnotated() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model14.class));
+        assertThat(output.getMessage(), is("Parameter not annotated: arg1"));
+    }
+
+    @Test
+    public void toTestNoSetterArgs() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model15.class));
+        assertThat(output.getMessage(), is("No arguments: setStr"));
+    }
+
+    @Test
+    public void toTestTooManySetterArgs() throws IOException {
+        Properties properties = new Properties();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
+        properties.load(in);
+        PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
+                () -> properties.to(Model16.class));
+        assertThat(output.getMessage(), is("Too many arguments: setStr: 2"));
+    }
+
+    @Test
+    public void testFromProperties() {
+        Properties props = new Properties();
+        props.put("test.found.string", "hello world");
+        Properties properties = Properties.from(props);
+        Model17 output = properties.to(Model17.class);
+        assertThat(output.getStr(), is("hello world"));
+    }
+
+    private void validate(Model1 model) {
+        assertAll(() -> assertThat(model.getFoundString(), is("hello world")),
+                () -> assertThat(model.getFoundInteger(), is(32)),
+                () -> assertThat(model.getFoundIntegerPrimitive(), is(32)),
+                () -> assertThat(model.getFoundLong(), is(64L)),
+                () -> assertThat(model.getFoundLongPrimitive(), is(64L)),
+                () -> assertThat(model.getFoundDouble(), is(2.2)),
+                () -> assertThat(model.getFoundDoublePrimitive(), is(2.2)),
+                () -> assertThat(model.getFoundFloat(), is(1.1F)),
+                () -> assertThat(model.getFoundFloatPrimitive(), is(1.1F)),
+                () -> assertThat(model.getFoundBoolean(), is(true)),
+                () -> assertThat(model.getFoundBooleanPrimitive(), is(true)));
+    }
+
+    private void validate(Model2 model) {
+        assertAll(() -> assertThat(model.getFoundString(), is("hello world")),
+                () -> assertThat(model.getFoundInteger(), is(32)),
+                () -> assertThat(model.getFoundIntegerPrimitive(), is(32)),
+                () -> assertThat(model.getFoundLong(), is(64L)),
+                () -> assertThat(model.getFoundLongPrimitive(), is(64L)),
+                () -> assertThat(model.getFoundDouble(), is(2.2)),
+                () -> assertThat(model.getFoundDoublePrimitive(), is(2.2)),
+                () -> assertThat(model.getFoundFloat(), is(1.1F)),
+                () -> assertThat(model.getFoundFloatPrimitive(), is(1.1F)),
+                () -> assertThat(model.getFoundBoolean(), is(true)),
+                () -> assertThat(model.getFoundBooleanPrimitive(), is(true)));
+    }
+
+    private void validate(Model3 model) {
+        assertAll(() -> assertThat(model.getFoundString(), is("hello world")),
+                () -> assertThat(model.getFoundInteger(), is(32)),
+                () -> assertThat(model.getFoundIntegerPrimitive(), is(32)),
+                () -> assertThat(model.getFoundLong(), is(64L)),
+                () -> assertThat(model.getFoundLongPrimitive(), is(64L)),
+                () -> assertThat(model.getFoundDouble(), is(2.2)),
+                () -> assertThat(model.getFoundDoublePrimitive(), is(2.2)),
+                () -> assertThat(model.getFoundFloat(), is(1.1F)),
+                () -> assertThat(model.getFoundFloatPrimitive(), is(1.1F)),
+                () -> assertThat(model.getFoundBoolean(), is(true)),
+                () -> assertThat(model.getFoundBooleanPrimitive(), is(true)));
     }
 
 }

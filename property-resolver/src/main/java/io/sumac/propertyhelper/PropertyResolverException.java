@@ -1,6 +1,9 @@
 package io.sumac.propertyhelper;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,6 +41,35 @@ public abstract class PropertyResolverException extends RuntimeException {
         return new InterpolationErrorException("Interpolation error: Cannot nest a placeholder key inside of a default value.");
     }
 
+    static PropertyResolverException unsupportedType(Field field) {
+        return new UnsupportedTypeException("Field type not supported: " + field.getType());
+    }
+
+    static PropertyResolverException unsupportedType(Parameter parameter) {
+        return new UnsupportedTypeException("Parameter type not supported: " + parameter.getType());
+    }
+
+    static PropertyResolverException tooManySetterArgs(Method method) {
+        return new BadSetterMethodException(
+                "Too many arguments: " + method.getName() + ": " + method.getParameterCount());
+    }
+
+    static PropertyResolverException noSetterArgs(Method method) {
+        return new BadSetterMethodException("No arguments: " + method.getName());
+    }
+
+    static PropertyResolverException tooManyConstructors(int count) {
+        return new BadConstructorException("Too many constructors: " + count);
+    }
+
+    static PropertyResolverException constructorArgNotAnnotated(Parameter parameter) {
+        return new BadConstructorException("Parameter not annotated: " + parameter.getName());
+    }
+
+    static PropertyResolverException wrapCheckedReflectionExceptions(Exception e) {
+        return new ReflectionErrorException("Reflection error", e);
+    }
+
     static class UnexpectedIOException extends PropertyResolverException {
         private UnexpectedIOException(String msg, Throwable t) {
             super(msg, t);
@@ -59,6 +91,30 @@ public abstract class PropertyResolverException extends RuntimeException {
     static class InterpolationErrorException extends PropertyResolverException {
         protected InterpolationErrorException(String msg) {
             super(msg);
+        }
+    }
+
+    static class UnsupportedTypeException extends PropertyResolverException {
+        private UnsupportedTypeException(String msg) {
+            super(msg);
+        }
+    }
+
+    static class BadSetterMethodException extends PropertyResolverException {
+        private BadSetterMethodException(String msg) {
+            super(msg);
+        }
+    }
+
+    static class BadConstructorException extends PropertyResolverException {
+        private BadConstructorException(String msg) {
+            super(msg);
+        }
+    }
+
+    static class ReflectionErrorException extends PropertyResolverException {
+        private ReflectionErrorException(String msg, Throwable t) {
+            super(msg, t);
         }
     }
 

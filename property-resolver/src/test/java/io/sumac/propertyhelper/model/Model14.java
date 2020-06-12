@@ -1,0 +1,26 @@
+package io.sumac.propertyhelper.model;
+
+import io.sumac.propertyhelper.annotations.Property;
+
+public class Model14 {
+
+    private String str;
+
+    public Model14(@Property(name = "test.found.string") String str, String someOtherString) {
+        this.str = str;
+    }
+
+    public String getStr() {
+        return str;
+    }
+
+    public void setStr(String str) {
+        this.str = str;
+    }
+
+    @Override
+    public String toString() {
+        return "Model13 [str=" + str + "]";
+    }
+
+}
