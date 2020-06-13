@@ -7,13 +7,11 @@
         <artifactId>sumac-parent</artifactId>
         <version>1</version>
     </parent>
-    <artifactId>property-resolver-parent</artifactId>
+    <artifactId>devtools</artifactId>
     <version>0.0.7</version>
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>A library that adds convenience methods to java.util.properties and simplifies reading properties from
-        multiple sources
-    </description>
+    <description>A collection of java tools intended to make coding a little more convenient</description>
     <url>https://github.com/sumacio-github/property-resolver</url>
     <organization>
         <name>sumac.io</name>
