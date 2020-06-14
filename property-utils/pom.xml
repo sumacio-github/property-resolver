@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.sumac</groupId>
-        <artifactId>property-resolver-parent</artifactId>
+        <artifactId>devtools</artifactId>
         <version>0.0.7</version>
     </parent>
     <artifactId>property-utils</artifactId>
