@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import io.sumac.propertyresolver.Properties;
 import io.sumac.propertyutils.utility.SupportedExtensions;
-import io.sumac.propertyutils.utility.SimpleTextFileReader;
+import io.sumac.propertyresolver.utility.SimpleTextFileReader;
 
 import java.io.IOException;
 import java.io.StringReader;
