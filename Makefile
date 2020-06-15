@@ -1,7 +1,7 @@
 all: run
 
 build:
-	mvn clean package
+	mvn clean package -Ptest
 
 docker: build
 	docker build -t testapp .

@@ -1,5 +1,5 @@
 FROM openjdk:14-alpine
 
-COPY property-resolver/target/property-resolver-*.jar /opt/java/property-resolver.jar
+COPY property-utils/target/property-utils-*-jar-with-dependencies.jar /opt/java/property-utils.jar
 
-ENTRYPOINT ["jshell", "--class-path", "/opt/java/property-resolver.jar", "--enable-preview"]
+ENTRYPOINT ["jshell", "--class-path", "/opt/java/property-utils.jar", "--enable-preview"]
