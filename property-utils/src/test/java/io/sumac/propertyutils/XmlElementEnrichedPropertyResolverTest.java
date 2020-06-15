@@ -2,6 +2,7 @@ package io.sumac.propertyutils;
 
 import java.io.IOException;
 
+import io.sumac.propertyresolver.Properties;
 import io.sumac.propertyutils.domain.Model;
 import org.junit.jupiter.api.BeforeEach;
 

@@ -1,8 +1,10 @@
 package io.sumac.propertyutils;
 
+import io.sumac.propertyresolver.Properties;
+import io.sumac.propertyresolver.PropertyResolverException;
 import io.sumac.propertyutils.domain.Fields;
 import io.sumac.propertyutils.domain.Model;
-import io.sumac.propertyutils.utility.SimpleTextFileReader;
+import io.sumac.propertyresolver.utility.SimpleTextFileReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -105,7 +107,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 
     @Test
     public void testGetStringRequired_notExists() {
-        Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
+        Assertions.assertThrows(PropertyResolverException.class,
                 () -> systemUnderTest.getStringRequired(STRING_KEY_NOT_FOUND));
     }
 
@@ -126,7 +128,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 
     @Test
     public void testGetBooleanRequired_notExists() {
-        Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
+        Assertions.assertThrows(PropertyResolverException.class,
                 () -> systemUnderTest.getBooleanRequired(BOOLEAN_KEY_NOT_FOUND));
     }
 
@@ -147,7 +149,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 
     @Test
     public void testGetIntRequired_notExists() {
-        Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
+        Assertions.assertThrows(PropertyResolverException.class,
                 () -> systemUnderTest.getIntRequired(INT_KEY_NOT_FOUND));
     }
 
@@ -168,7 +170,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 
     @Test
     public void testGetLongRequired_notExists() {
-        Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
+        Assertions.assertThrows(PropertyResolverException.class,
                 () -> systemUnderTest.getLongRequired(LONG_KEY_NOT_FOUND));
     }
 
@@ -189,7 +191,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 
     @Test
     public void testGetDoubleRequired_notExists() {
-        Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
+        Assertions.assertThrows(PropertyResolverException.class,
                 () -> systemUnderTest.getDoubleRequired(DOUBLE_KEY_NOT_FOUND));
     }
 
@@ -210,7 +212,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 
     @Test
     public void testGetFloatRequired_notExists() {
-        Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
+        Assertions.assertThrows(PropertyResolverException.class,
                 () -> systemUnderTest.getFloatRequired(FLOAT_KEY_NOT_FOUND));
     }
 
@@ -231,7 +233,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 
     @Test
     public void testGetDateRequired_notExists() {
-        Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
+        Assertions.assertThrows(PropertyResolverException.class,
                 () -> systemUnderTest.getDateRequired(DATE_KEY_NOT_FOUND, DATE_PATTERN));
     }
 
@@ -252,7 +254,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
 
     @Test
     public void testGetEmptyRequired_notExists() {
-        Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
+        Assertions.assertThrows(PropertyResolverException.class,
                 () -> systemUnderTest.getStringRequired(EMPTY_KEY_NOT_FOUND));
     }
 

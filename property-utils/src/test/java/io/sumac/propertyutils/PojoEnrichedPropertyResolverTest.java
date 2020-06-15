@@ -1,6 +1,7 @@
 package io.sumac.propertyutils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.sumac.propertyresolver.Properties;
 import io.sumac.propertyutils.domain.Fields;
 import io.sumac.propertyutils.domain.Model;
 import org.junit.jupiter.api.BeforeEach;
