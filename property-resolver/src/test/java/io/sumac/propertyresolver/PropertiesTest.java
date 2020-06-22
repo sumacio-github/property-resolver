@@ -258,9 +258,9 @@ public class PropertiesTest {
 
     @Test
     public void testGetChildProperties_object() {
-        testGetChildProperties("object");
-        testGetChildProperties("list.1");
-        testGetChildProperties("list.2");
+        testGetChildProperties("object.");
+        testGetChildProperties("list.1.");
+        testGetChildProperties("list.2.");
     }
 
     private void testGetChildProperties(String parent) {

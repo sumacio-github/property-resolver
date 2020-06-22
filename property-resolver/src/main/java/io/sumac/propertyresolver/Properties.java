@@ -6,7 +6,6 @@ import io.sumac.propertyresolver.utility.Executable;
 import io.sumac.propertyresolver.utility.IOThrowingSupplier;
 import io.sumac.propertyresolver.utility.PreCondition;
 import io.sumac.propertyresolver.utility.TypeTransformer;
-import jdk.internal.joptsimple.internal.Strings;
 
 import java.io.IOException;
 import java.lang.reflect.*;
