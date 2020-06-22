@@ -90,33 +90,33 @@ public class PropertiesTest {
 
     @Test
     public void testGetString_exists() {
-        assertThat(systemUnderTest.getString(STRING_KEY).get(), is(STRING_VALUE));
+        assertThat(systemUnderTest.getPropertyOptional(STRING_KEY).get(), is(STRING_VALUE));
     }
 
     @Test
     public void testGetString_notExists() {
-        assertThat(systemUnderTest.getString(STRING_KEY_NOT_FOUND).isPresent(), is(false));
+        assertThat(systemUnderTest.getPropertyOptional(STRING_KEY_NOT_FOUND).isPresent(), is(false));
     }
 
     @Test
     public void testGetStringRequired_exists() {
-        assertThat(systemUnderTest.getStringRequired(STRING_KEY), is(STRING_VALUE));
+        assertThat(systemUnderTest.getPropertyRequired(STRING_KEY), is(STRING_VALUE));
     }
 
     @Test
     public void testGetStringRequired_notExists() {
         Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
-                () -> systemUnderTest.getStringRequired(STRING_KEY_NOT_FOUND));
+                () -> systemUnderTest.getPropertyRequired(STRING_KEY_NOT_FOUND));
     }
 
     @Test
     public void testGetBoolean_exists() {
-        assertThat(systemUnderTest.getBoolean(BOOLEAN_KEY).get(), is(BOOLEAN_VALUE));
+        assertThat(systemUnderTest.getBooleanOptional(BOOLEAN_KEY).get(), is(BOOLEAN_VALUE));
     }
 
     @Test
     public void testGetBoolean_notExists() {
-        assertThat(systemUnderTest.getBoolean(BOOLEAN_KEY_NOT_FOUND).isPresent(), is(false));
+        assertThat(systemUnderTest.getBooleanOptional(BOOLEAN_KEY_NOT_FOUND).isPresent(), is(false));
     }
 
     @Test
@@ -132,12 +132,12 @@ public class PropertiesTest {
 
     @Test
     public void testGetInt_exists() {
-        assertThat(systemUnderTest.getInt(INT_KEY).get(), is(INT_VALUE));
+        assertThat(systemUnderTest.getIntOptional(INT_KEY).get(), is(INT_VALUE));
     }
 
     @Test
     public void testGetInt_notExists() {
-        assertThat(systemUnderTest.getInt(INT_KEY_NOT_FOUND).isPresent(), is(false));
+        assertThat(systemUnderTest.getIntOptional(INT_KEY_NOT_FOUND).isPresent(), is(false));
     }
 
     @Test
@@ -153,12 +153,12 @@ public class PropertiesTest {
 
     @Test
     public void testGetLong_exists() {
-        assertThat(systemUnderTest.getLong(LONG_KEY).get(), is(LONG_VALUE));
+        assertThat(systemUnderTest.getLongOptional(LONG_KEY).get(), is(LONG_VALUE));
     }
 
     @Test
     public void testGetLong_notExists() {
-        assertThat(systemUnderTest.getLong(LONG_KEY_NOT_FOUND).isPresent(), is(false));
+        assertThat(systemUnderTest.getLongOptional(LONG_KEY_NOT_FOUND).isPresent(), is(false));
     }
 
     @Test
@@ -174,12 +174,12 @@ public class PropertiesTest {
 
     @Test
     public void testGetDouble_exists() {
-        assertThat(systemUnderTest.getDouble(DOUBLE_KEY).get(), is(DOUBLE_VALUE));
+        assertThat(systemUnderTest.getDoubleOptional(DOUBLE_KEY).get(), is(DOUBLE_VALUE));
     }
 
     @Test
     public void testGetDouble_notExists() {
-        assertThat(systemUnderTest.getDouble(DOUBLE_KEY_NOT_FOUND).isPresent(), is(false));
+        assertThat(systemUnderTest.getDoubleOptional(DOUBLE_KEY_NOT_FOUND).isPresent(), is(false));
     }
 
     @Test
@@ -195,12 +195,12 @@ public class PropertiesTest {
 
     @Test
     public void testGetFloat_exists() {
-        assertThat(systemUnderTest.getFloat(FLOAT_KEY).get(), is(FLOAT_VALUE));
+        assertThat(systemUnderTest.getFloatOptional(FLOAT_KEY).get(), is(FLOAT_VALUE));
     }
 
     @Test
     public void testGetFloat_notExists() {
-        assertThat(systemUnderTest.getFloat(FLOAT_KEY_NOT_FOUND).isPresent(), is(false));
+        assertThat(systemUnderTest.getFloatOptional(FLOAT_KEY_NOT_FOUND).isPresent(), is(false));
     }
 
     @Test
@@ -216,12 +216,12 @@ public class PropertiesTest {
 
     @Test
     public void testGetDate_exists() {
-        assertThat(systemUnderTest.getDate(DATE_KEY, DATE_PATTERN).get(), is(DATE_VALUE));
+        assertThat(systemUnderTest.getDateOptional(DATE_KEY, DATE_PATTERN).get(), is(DATE_VALUE));
     }
 
     @Test
     public void testGetDate_notExists() {
-        assertThat(systemUnderTest.getDate(DATE_KEY_NOT_FOUND, DATE_PATTERN).isPresent(), is(false));
+        assertThat(systemUnderTest.getDateOptional(DATE_KEY_NOT_FOUND, DATE_PATTERN).isPresent(), is(false));
     }
 
     @Test
@@ -237,23 +237,23 @@ public class PropertiesTest {
 
     @Test
     public void testGetEmpty_exists() {
-        assertThat(systemUnderTest.getString(EMPTY_KEY).get(), is(EMPTY_VALUE));
+        assertThat(systemUnderTest.getPropertyOptional(EMPTY_KEY).get(), is(EMPTY_VALUE));
     }
 
     @Test
     public void testGetEmpty_notExists() {
-        assertThat(systemUnderTest.getString(EMPTY_KEY_NOT_FOUND).isPresent(), is(false));
+        assertThat(systemUnderTest.getPropertyOptional(EMPTY_KEY_NOT_FOUND).isPresent(), is(false));
     }
 
     @Test
     public void testGetEmptyRequired_exists() {
-        assertThat(systemUnderTest.getStringRequired(EMPTY_KEY), is(EMPTY_VALUE));
+        assertThat(systemUnderTest.getPropertyRequired(EMPTY_KEY), is(EMPTY_VALUE));
     }
 
     @Test
     public void testGetEmptyRequired_notExists() {
         Assertions.assertThrows(PropertyResolverException.PropertyNotFoundException.class,
-                () -> systemUnderTest.getStringRequired(EMPTY_KEY_NOT_FOUND));
+                () -> systemUnderTest.getPropertyRequired(EMPTY_KEY_NOT_FOUND));
     }
 
     @Test
@@ -264,18 +264,18 @@ public class PropertiesTest {
     }
 
     private void testGetChildProperties(String parent) {
-        Properties props = systemUnderTest.getChildProperties(parent);
-        assertThat(parent + STRING_KEY, props.getStringRequired(STRING_KEY), is(STRING_VALUE));
-        assertThat(parent + INT_KEY, props.getStringRequired(INT_KEY), is(INT_STRING_VALUE));
-        assertThat(parent + LONG_KEY, props.getStringRequired(LONG_KEY), is(LONG_STRING_VALUE));
-        assertThat(parent + DOUBLE_KEY, props.getStringRequired(DOUBLE_KEY), is(DOUBLE_STRING_VALUE));
-        assertThat(parent + FLOAT_KEY, props.getStringRequired(FLOAT_KEY), is(FLOAT_STRING_VALUE));
-        assertThat(parent + BOOLEAN_KEY, props.getStringRequired(BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
-        assertThat(parent + DATE_KEY, props.getStringRequired(DATE_KEY), is(DATE_STRING_VALUE));
-        assertThat(parent + EMPTY_KEY, props.getStringRequired(EMPTY_KEY), is(EMPTY_VALUE));
-        assertThat(parent + STRINGS_KEY_1, props.getStringRequired(STRINGS_KEY_1), is(STRINGS_VALUE_1));
-        assertThat(parent + STRINGS_KEY_2, props.getStringRequired(STRINGS_KEY_2), is(STRINGS_VALUE_2));
-        assertThat(parent + SOLO_STRING_KEY, props.getStringRequired(SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
+        Properties props = systemUnderTest.getSubset(parent);
+        assertThat(parent + STRING_KEY, props.getPropertyRequired(STRING_KEY), is(STRING_VALUE));
+        assertThat(parent + INT_KEY, props.getPropertyRequired(INT_KEY), is(INT_STRING_VALUE));
+        assertThat(parent + LONG_KEY, props.getPropertyRequired(LONG_KEY), is(LONG_STRING_VALUE));
+        assertThat(parent + DOUBLE_KEY, props.getPropertyRequired(DOUBLE_KEY), is(DOUBLE_STRING_VALUE));
+        assertThat(parent + FLOAT_KEY, props.getPropertyRequired(FLOAT_KEY), is(FLOAT_STRING_VALUE));
+        assertThat(parent + BOOLEAN_KEY, props.getPropertyRequired(BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
+        assertThat(parent + DATE_KEY, props.getPropertyRequired(DATE_KEY), is(DATE_STRING_VALUE));
+        assertThat(parent + EMPTY_KEY, props.getPropertyRequired(EMPTY_KEY), is(EMPTY_VALUE));
+        assertThat(parent + STRINGS_KEY_1, props.getPropertyRequired(STRINGS_KEY_1), is(STRINGS_VALUE_1));
+        assertThat(parent + STRINGS_KEY_2, props.getPropertyRequired(STRINGS_KEY_2), is(STRINGS_VALUE_2));
+        assertThat(parent + SOLO_STRING_KEY, props.getPropertyRequired(SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
     }
 
     @Test
@@ -287,17 +287,17 @@ public class PropertiesTest {
 
     private void testFilterByStartsWith(String parent) {
         Properties props = systemUnderTest.filterByStartsWith(parent);
-        assertThat(parent + STRING_KEY, props.getStringRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
-        assertThat(parent + INT_KEY, props.getStringRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
-        assertThat(parent + LONG_KEY, props.getStringRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
-        assertThat(parent + DOUBLE_KEY, props.getStringRequired(parent + "." + DOUBLE_KEY), is(DOUBLE_STRING_VALUE));
-        assertThat(parent + FLOAT_KEY, props.getStringRequired(parent + "." + FLOAT_KEY), is(FLOAT_STRING_VALUE));
-        assertThat(parent + BOOLEAN_KEY, props.getStringRequired(parent + "." + BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
-        assertThat(parent + DATE_KEY, props.getStringRequired(parent + "." + DATE_KEY), is(DATE_STRING_VALUE));
-        assertThat(parent + EMPTY_KEY, props.getStringRequired(parent + "." + EMPTY_KEY), is(EMPTY_VALUE));
-        assertThat(parent + STRINGS_KEY_1, props.getStringRequired(parent + "." + STRINGS_KEY_1), is(STRINGS_VALUE_1));
-        assertThat(parent + STRINGS_KEY_2, props.getStringRequired(parent + "." + STRINGS_KEY_2), is(STRINGS_VALUE_2));
-        assertThat(parent + SOLO_STRING_KEY, props.getStringRequired(parent + "." + SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
+        assertThat(parent + STRING_KEY, props.getPropertyRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
+        assertThat(parent + INT_KEY, props.getPropertyRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
+        assertThat(parent + LONG_KEY, props.getPropertyRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
+        assertThat(parent + DOUBLE_KEY, props.getPropertyRequired(parent + "." + DOUBLE_KEY), is(DOUBLE_STRING_VALUE));
+        assertThat(parent + FLOAT_KEY, props.getPropertyRequired(parent + "." + FLOAT_KEY), is(FLOAT_STRING_VALUE));
+        assertThat(parent + BOOLEAN_KEY, props.getPropertyRequired(parent + "." + BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
+        assertThat(parent + DATE_KEY, props.getPropertyRequired(parent + "." + DATE_KEY), is(DATE_STRING_VALUE));
+        assertThat(parent + EMPTY_KEY, props.getPropertyRequired(parent + "." + EMPTY_KEY), is(EMPTY_VALUE));
+        assertThat(parent + STRINGS_KEY_1, props.getPropertyRequired(parent + "." + STRINGS_KEY_1), is(STRINGS_VALUE_1));
+        assertThat(parent + STRINGS_KEY_2, props.getPropertyRequired(parent + "." + STRINGS_KEY_2), is(STRINGS_VALUE_2));
+        assertThat(parent + SOLO_STRING_KEY, props.getPropertyRequired(parent + "." + SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
     }
 
     @Test
@@ -309,17 +309,17 @@ public class PropertiesTest {
 
     private void testFilterByRegex(String parent, String regex) {
         Properties props = systemUnderTest.filterByRegex(regex);
-        assertThat(parent + STRING_KEY, props.getStringRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
-        assertThat(parent + INT_KEY, props.getStringRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
-        assertThat(parent + LONG_KEY, props.getStringRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
-        assertThat(parent + DOUBLE_KEY, props.getStringRequired(parent + "." + DOUBLE_KEY), is(DOUBLE_STRING_VALUE));
-        assertThat(parent + FLOAT_KEY, props.getStringRequired(parent + "." + FLOAT_KEY), is(FLOAT_STRING_VALUE));
-        assertThat(parent + BOOLEAN_KEY, props.getStringRequired(parent + "." + BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
-        assertThat(parent + DATE_KEY, props.getStringRequired(parent + "." + DATE_KEY), is(DATE_STRING_VALUE));
-        assertThat(parent + EMPTY_KEY, props.getStringRequired(parent + "." + EMPTY_KEY), is(EMPTY_VALUE));
-        assertThat(parent + STRINGS_KEY_1, props.getStringRequired(parent + "." + STRINGS_KEY_1), is(STRINGS_VALUE_1));
-        assertThat(parent + STRINGS_KEY_2, props.getStringRequired(parent + "." + STRINGS_KEY_2), is(STRINGS_VALUE_2));
-        assertThat(parent + SOLO_STRING_KEY, props.getStringRequired(parent + "." + SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
+        assertThat(parent + STRING_KEY, props.getPropertyRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
+        assertThat(parent + INT_KEY, props.getPropertyRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
+        assertThat(parent + LONG_KEY, props.getPropertyRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
+        assertThat(parent + DOUBLE_KEY, props.getPropertyRequired(parent + "." + DOUBLE_KEY), is(DOUBLE_STRING_VALUE));
+        assertThat(parent + FLOAT_KEY, props.getPropertyRequired(parent + "." + FLOAT_KEY), is(FLOAT_STRING_VALUE));
+        assertThat(parent + BOOLEAN_KEY, props.getPropertyRequired(parent + "." + BOOLEAN_KEY), is(BOOLEAN_STRING_VALUE));
+        assertThat(parent + DATE_KEY, props.getPropertyRequired(parent + "." + DATE_KEY), is(DATE_STRING_VALUE));
+        assertThat(parent + EMPTY_KEY, props.getPropertyRequired(parent + "." + EMPTY_KEY), is(EMPTY_VALUE));
+        assertThat(parent + STRINGS_KEY_1, props.getPropertyRequired(parent + "." + STRINGS_KEY_1), is(STRINGS_VALUE_1));
+        assertThat(parent + STRINGS_KEY_2, props.getPropertyRequired(parent + "." + STRINGS_KEY_2), is(STRINGS_VALUE_2));
+        assertThat(parent + SOLO_STRING_KEY, props.getPropertyRequired(parent + "." + SOLO_STRING_KEY), is(SOLO_STRING_VALUE));
     }
 
     @Test

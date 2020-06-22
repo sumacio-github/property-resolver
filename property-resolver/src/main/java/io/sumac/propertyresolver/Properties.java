@@ -1,12 +1,12 @@
 package io.sumac.propertyresolver;
 
-import io.sumac.propertyresolver.annotations.Interpolates;
 import io.sumac.propertyresolver.annotations.NotNull;
 import io.sumac.propertyresolver.annotations.Property;
 import io.sumac.propertyresolver.utility.Executable;
 import io.sumac.propertyresolver.utility.IOThrowingSupplier;
 import io.sumac.propertyresolver.utility.PreCondition;
 import io.sumac.propertyresolver.utility.TypeTransformer;
+import jdk.internal.joptsimple.internal.Strings;
 
 import java.io.IOException;
 import java.lang.reflect.*;
@@ -72,8 +72,7 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    @Interpolates
-    public Optional<String> getString(String key) {
+    public Optional<String> getPropertyOptional(String key) {
         if (this.containsKey(key)) {
             return Optional.of(getProperty(key));
         } else {
@@ -81,14 +80,28 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    @Interpolates
-    public String getStringRequired(String key) {
+    public String getPropertyRequired(String key) {
         rejectIfRequiredKeyNotFound(key);
         return getProperty(key);
     }
 
-    @Interpolates
-    public Optional<Boolean> getBoolean(String key) {
+    public Boolean getBoolean(String key) {
+        if (this.containsKey(key)) {
+            return toBoolean(getProperty(key));
+        } else {
+            return null;
+        }
+    }
+
+    public boolean getBoolean(String key, boolean defaultValue) {
+        if (this.containsKey(key)) {
+            return toBoolean(getProperty(key));
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public Optional<Boolean> getBooleanOptional(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toBoolean(getProperty(key)));
         } else {
@@ -96,14 +109,27 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    @Interpolates
     public boolean getBooleanRequired(String key) {
-        rejectIfRequiredKeyNotFound(key);
-        return toBoolean(getProperty(key));
+        return toBoolean(getPropertyRequired(key));
     }
 
-    @Interpolates
-    public Optional<Integer> getInt(String key) {
+    public Integer getInt(String key) {
+        if (this.containsKey(key)) {
+            return toInt(getProperty(key));
+        } else {
+            return null;
+        }
+    }
+
+    public int getInt(String key, int defaultValue) {
+        if (this.containsKey(key)) {
+            return toInt(getProperty(key));
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public Optional<Integer> getIntOptional(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toInt(getProperty(key)));
         } else {
@@ -111,14 +137,27 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    @Interpolates
     public int getIntRequired(String key) {
-        rejectIfRequiredKeyNotFound(key);
-        return toInt(getProperty(key));
+        return toInt(getPropertyRequired(key));
     }
 
-    @Interpolates
-    public Optional<Long> getLong(String key) {
+    public Long getLong(String key) {
+        if (this.containsKey(key)) {
+            return toLong(getProperty(key));
+        } else {
+            return null;
+        }
+    }
+
+    public long getLong(String key, long defaultValue) {
+        if (this.containsKey(key)) {
+            return toLong(getProperty(key));
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public Optional<Long> getLongOptional(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toLong(getProperty(key)));
         } else {
@@ -126,14 +165,27 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    @Interpolates
     public long getLongRequired(String key) {
-        rejectIfRequiredKeyNotFound(key);
-        return toLong(getProperty(key));
+        return toLong(getPropertyRequired(key));
     }
 
-    @Interpolates
-    public Optional<Double> getDouble(String key) {
+    public Double getDouble(String key) {
+        if (this.containsKey(key)) {
+            return toDouble(getProperty(key));
+        } else {
+            return null;
+        }
+    }
+
+    public double getDouble(String key, double defaultValue) {
+        if (this.containsKey(key)) {
+            return toDouble(getProperty(key));
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public Optional<Double> getDoubleOptional(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toDouble(getProperty(key)));
         } else {
@@ -141,14 +193,27 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    @Interpolates
     public double getDoubleRequired(String key) {
-        rejectIfRequiredKeyNotFound(key);
-        return toDouble(getProperty(key));
+        return toDouble(getPropertyRequired(key));
     }
 
-    @Interpolates
-    public Optional<Float> getFloat(String key) {
+    public Float getFloat(String key) {
+        if (this.containsKey(key)) {
+            return toFloat(getProperty(key));
+        } else {
+            return null;
+        }
+    }
+
+    public float getFloat(String key, float defaultValue) {
+        if (this.containsKey(key)) {
+            return toFloat(getProperty(key));
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public Optional<Float> getFloatOptional(String key) {
         if (this.containsKey(key)) {
             return Optional.of(toFloat(getProperty(key)));
         } else {
@@ -156,14 +221,28 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    @Interpolates
     public float getFloatRequired(String key) {
-        rejectIfRequiredKeyNotFound(key);
-        return toFloat(getProperty(key));
+        return toFloat(getPropertyRequired(key));
     }
 
-    @Interpolates
-    public Optional<Date> getDate(String key, String pattern) {
+    public Date getDate(String key, String pattern) {
+        if (this.containsKey(key)) {
+            return toDate(getProperty(key), pattern);
+        } else {
+            return null;
+        }
+    }
+
+    public Date getDate(String key, String pattern, @NotNull Date defaultValue) {
+        PreCondition.Parameter.notNull(defaultValue);
+        if (this.containsKey(key)) {
+            return toDate(getProperty(key), pattern);
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public Optional<Date> getDateOptional(String key, String pattern) {
         if (this.containsKey(key)) {
             return Optional.of(toDate(getProperty(key), pattern));
         } else {
@@ -171,19 +250,15 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    @Interpolates
     public Date getDateRequired(String key, String pattern) {
-        rejectIfRequiredKeyNotFound(key);
-        return toDate(getProperty(key), pattern);
+        return toDate(getPropertyRequired(key), pattern);
     }
 
-    @Interpolates
     public void show() {
         TreeSet<String> sortedKeys = new TreeSet<>(this.stringPropertyNames());
         sortedKeys.forEach(k -> System.out.println(k + "=" + interpolate(getProperty(k))));
     }
 
-    @Interpolates
     public void show(IOThrowingSupplier<String> customFormatter) {
         try {
             System.out.println(interpolate(PreCondition.Result.notNull(customFormatter.get())));
@@ -297,18 +372,22 @@ public class Properties extends java.util.Properties {
     public Properties filterByStartsWith(String keyStartsWith) {
         Properties result = new Properties();
         this.forEach((k, v) -> {
-            if (k instanceof String && k.toString().startsWith(keyStartsWith + ".")) {
+            if (k instanceof String && k.toString().startsWith(keyStartsWith)) {
                 result.put(k, v);
             }
         });
         return result;
     }
 
-    public Properties getChildProperties(String parentPropertyKey) {
+    public Properties getSubset(String parentPropertyKey) {
+        return getSubset(parentPropertyKey, "");
+    }
+
+    public Properties getSubset(String parentPropertyKey, String newPrefix) {
         Properties result = new Properties();
         this.forEach((k, v) -> {
             if (k instanceof String && k.toString().startsWith(parentPropertyKey)) {
-                result.put(k.toString().replace(parentPropertyKey + ".", ""), v);
+                result.put(k.toString().replace(parentPropertyKey, newPrefix), v);
             }
         });
         return result;
@@ -320,7 +399,6 @@ public class Properties extends java.util.Properties {
         }
     }
 
-    @Interpolates
     public String interpolate(String text) {
         return interpolator.apply(text);
     }
@@ -410,17 +488,17 @@ public class Properties extends java.util.Properties {
         for (Parameter parameter : parameters) {
             Property property = parameter.getAnnotation(Property.class);
             if (TypeTransformer.isString(parameter.getType())) {
-                properties.add(handleOptional(property, getString(property.name())));
+                properties.add(handleOptional(property, getPropertyOptional(property.name())));
             } else if (TypeTransformer.isLong(parameter.getType())) {
-                properties.add(handleOptional(property, getLong(property.name())));
+                properties.add(handleOptional(property, getLongOptional(property.name())));
             } else if (TypeTransformer.isInt(parameter.getType())) {
-                properties.add(handleOptional(property, getInt(property.name())));
+                properties.add(handleOptional(property, getIntOptional(property.name())));
             } else if (TypeTransformer.isDouble(parameter.getType())) {
-                properties.add(handleOptional(property, getDouble(property.name())));
+                properties.add(handleOptional(property, getDoubleOptional(property.name())));
             } else if (TypeTransformer.isFloat(parameter.getType())) {
-                properties.add(handleOptional(property, getFloat(property.name())));
+                properties.add(handleOptional(property, getFloatOptional(property.name())));
             } else if (TypeTransformer.isBoolean(parameter.getType())) {
-                properties.add(handleOptional(property, getBoolean(property.name())));
+                properties.add(handleOptional(property, getBooleanOptional(property.name())));
             } else {
                 throw PropertyResolverException.unsupportedType(parameter);
             }
@@ -450,17 +528,17 @@ public class Properties extends java.util.Properties {
         field.setAccessible(true);
         Property property = field.getAnnotation(Property.class);
         if (TypeTransformer.isString(field.getType())) {
-            field.set(obj, handleOptional(property, getString(property.name())));
+            field.set(obj, handleOptional(property, getPropertyOptional(property.name())));
         } else if (TypeTransformer.isLong(field.getType())) {
-            field.set(obj, handleOptional(property, getLong(property.name())));
+            field.set(obj, handleOptional(property, getLongOptional(property.name())));
         } else if (TypeTransformer.isInt(field.getType())) {
-            field.set(obj, handleOptional(property, getInt(property.name())));
+            field.set(obj, handleOptional(property, getIntOptional(property.name())));
         } else if (TypeTransformer.isDouble(field.getType())) {
-            field.set(obj, handleOptional(property, getDouble(property.name())));
+            field.set(obj, handleOptional(property, getDoubleOptional(property.name())));
         } else if (TypeTransformer.isFloat(field.getType())) {
-            field.set(obj, handleOptional(property, getFloat(property.name())));
+            field.set(obj, handleOptional(property, getFloatOptional(property.name())));
         } else if (TypeTransformer.isBoolean(field.getType())) {
-            field.set(obj, handleOptional(property, getBoolean(property.name())));
+            field.set(obj, handleOptional(property, getBooleanOptional(property.name())));
         } else {
             throw PropertyResolverException.unsupportedType(field);
         }
@@ -482,17 +560,17 @@ public class Properties extends java.util.Properties {
         Property property = method.getAnnotation(Property.class);
         Parameter parameter = method.getParameters()[0];
         if (TypeTransformer.isString(parameter.getType())) {
-            method.invoke(obj, handleOptional(property, getString(property.name())));
+            method.invoke(obj, handleOptional(property, getPropertyOptional(property.name())));
         } else if (TypeTransformer.isLong(parameter.getType())) {
-            method.invoke(obj, handleOptional(property, getLong(property.name())));
+            method.invoke(obj, handleOptional(property, getLongOptional(property.name())));
         } else if (TypeTransformer.isInt(parameter.getType())) {
-            method.invoke(obj, handleOptional(property, getInt(property.name())));
+            method.invoke(obj, handleOptional(property, getIntOptional(property.name())));
         } else if (TypeTransformer.isDouble(parameter.getType())) {
-            method.invoke(obj, handleOptional(property, getDouble(property.name())));
+            method.invoke(obj, handleOptional(property, getDoubleOptional(property.name())));
         } else if (TypeTransformer.isFloat(parameter.getType())) {
-            method.invoke(obj, handleOptional(property, getFloat(property.name())));
+            method.invoke(obj, handleOptional(property, getFloatOptional(property.name())));
         } else if (TypeTransformer.isBoolean(parameter.getType())) {
-            method.invoke(obj, handleOptional(property, getBoolean(property.name())));
+            method.invoke(obj, handleOptional(property, getBooleanOptional(property.name())));
         } else {
             throw PropertyResolverException.unsupportedType(parameter);
         }
@@ -522,7 +600,6 @@ public class Properties extends java.util.Properties {
         private static final String DEFAULT_DELIMITER = ":";
         private static final String DEFAULT_VALUE = "";
 
-        @Interpolates
         public static String interpolate(java.util.Properties properties, String text) {
 
             int startindex = text.indexOf(STARTS_WITH);
