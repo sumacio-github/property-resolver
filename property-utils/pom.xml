@@ -9,7 +9,7 @@
     </parent>
     <artifactId>property-utils</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>A library that simplifies reading properties from multiple sources</description>
+    <description>A library that simplifies reading typedProperties from multiple sources</description>
     <url>https://github.com/sumacio-github/property-resolver</url>
     <organization>
         <name>sumac.io</name>

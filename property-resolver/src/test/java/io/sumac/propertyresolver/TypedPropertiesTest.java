@@ -22,11 +22,11 @@ import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class PropertiesTest {
+public class TypedPropertiesTest {
 
-    private static final Logger LOGGER = LogManager.getLogger(PropertiesTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(TypedPropertiesTest.class);
 
-    protected Properties systemUnderTest = new Properties();
+    protected TypedProperties systemUnderTest = new TypedProperties();
 
     protected static final String STRING_KEY = "string";
     protected static final String INT_KEY = "int";
@@ -264,7 +264,7 @@ public class PropertiesTest {
     }
 
     private void testGetChildProperties(String parent) {
-        Properties props = systemUnderTest.getSubset(parent);
+        TypedProperties props = systemUnderTest.getSubset(parent);
         assertThat(parent + STRING_KEY, props.getPropertyRequired(STRING_KEY), is(STRING_VALUE));
         assertThat(parent + INT_KEY, props.getPropertyRequired(INT_KEY), is(INT_STRING_VALUE));
         assertThat(parent + LONG_KEY, props.getPropertyRequired(LONG_KEY), is(LONG_STRING_VALUE));
@@ -286,7 +286,7 @@ public class PropertiesTest {
     }
 
     private void testFilterByStartsWith(String parent) {
-        Properties props = systemUnderTest.filterByStartsWith(parent);
+        TypedProperties props = systemUnderTest.filterByStartsWith(parent);
         assertThat(parent + STRING_KEY, props.getPropertyRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
         assertThat(parent + INT_KEY, props.getPropertyRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
         assertThat(parent + LONG_KEY, props.getPropertyRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
@@ -308,7 +308,7 @@ public class PropertiesTest {
     }
 
     private void testFilterByRegex(String parent, String regex) {
-        Properties props = systemUnderTest.filterByRegex(regex);
+        TypedProperties props = systemUnderTest.filterByRegex(regex);
         assertThat(parent + STRING_KEY, props.getPropertyRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
         assertThat(parent + INT_KEY, props.getPropertyRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
         assertThat(parent + LONG_KEY, props.getPropertyRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
@@ -381,187 +381,187 @@ public class PropertiesTest {
 
     @Test
     public void toTest_fields() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
-        Model1 output = properties.to(Model1.class);
+        typedProperties.load(in);
+        Model1 output = typedProperties.to(Model1.class);
         validate(output);
     }
 
     @Test
     public void toTest_methods() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
-        Model2 output = properties.to(Model2.class);
+        typedProperties.load(in);
+        Model2 output = typedProperties.to(Model2.class);
         validate(output);
     }
 
     @Test
     public void toTest_parameters() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
-        Model3 output = properties.to(Model3.class);
+        typedProperties.load(in);
+        Model3 output = typedProperties.to(Model3.class);
         validate(output);
     }
 
     @Test
     public void fillInTest_fields() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         Model1 model = new Model1();
-        properties.fillIn(model);
+        typedProperties.fillIn(model);
         validate(model);
     }
 
     @Test
     public void fillInTest_methods() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         Model2 model = new Model2();
-        properties.fillIn(model);
+        typedProperties.fillIn(model);
         validate(model);
     }
 
     @Test
     public void toTest_missingFields() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model4.class));
+                () -> typedProperties.to(Model4.class));
         assertThat(output.getMessage(), is("Property not found: '[test.not_found.string]'"));
     }
 
     @Test
     public void toTest_missingMethods() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model5.class));
+                () -> typedProperties.to(Model5.class));
         assertThat(output.getMessage(), is("Property not found: '[test.not_found.string]'"));
     }
 
     @Test
     public void toTest_missingParameters() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model6.class));
+                () -> typedProperties.to(Model6.class));
         assertThat(output.getMessage(), is("Property not found: '[test.not_found.string]'"));
     }
 
     @Test
     public void toTest_optionalFields() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
-        Model7 output = properties.to(Model7.class);
+        typedProperties.load(in);
+        Model7 output = typedProperties.to(Model7.class);
         assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
                 () -> assertThat(output.getNotFoundString(), nullValue()));
     }
 
     @Test
     public void toTest_optionalMethods() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
-        Model8 output = properties.to(Model8.class);
+        typedProperties.load(in);
+        Model8 output = typedProperties.to(Model8.class);
         assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
                 () -> assertThat(output.getNotFoundString(), nullValue()));
     }
 
     @Test
     public void toTest_optionalParameters() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
-        Model9 output = properties.to(Model9.class);
+        typedProperties.load(in);
+        Model9 output = typedProperties.to(Model9.class);
         assertAll(() -> assertThat(output.getFoundString(), is("hello world")),
                 () -> assertThat(output.getNotFoundString(), nullValue()));
     }
 
     @Test
     public void toTestInvalidTypeField() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model10.class));
+                () -> typedProperties.to(Model10.class));
         assertThat(output.getMessage(), is("Field type not supported: class java.util.Date"));
     }
 
     @Test
     public void toTestInvalidTypeMethod() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model11.class));
+                () -> typedProperties.to(Model11.class));
         assertThat(output.getMessage(), is("Parameter type not supported: class java.util.Date"));
     }
 
     @Test
     public void toTestInvalidTypeParameters() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model12.class));
+                () -> typedProperties.to(Model12.class));
         assertThat(output.getMessage(), is("Parameter type not supported: class java.util.Date"));
     }
 
     @Test
     public void toTestTooManyConstructors() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model13.class));
+                () -> typedProperties.to(Model13.class));
         assertThat(output.getMessage(), is("Too many constructors: 2"));
     }
 
     @Test
     public void toTestParameterArgNotAnnotated() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model14.class));
+                () -> typedProperties.to(Model14.class));
         assertThat(output.getMessage(), is("Parameter not annotated: arg1"));
     }
 
     @Test
     public void toTestNoSetterArgs() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model15.class));
+                () -> typedProperties.to(Model15.class));
         assertThat(output.getMessage(), is("No arguments: setStr"));
     }
 
     @Test
     public void toTestTooManySetterArgs() throws IOException {
-        Properties properties = new Properties();
+        TypedProperties typedProperties = new TypedProperties();
         InputStream in = getClass().getClassLoader().getResourceAsStream("inject_test.properties");
-        properties.load(in);
+        typedProperties.load(in);
         PropertyResolverException output = Assertions.assertThrows(PropertyResolverException.class,
-                () -> properties.to(Model16.class));
+                () -> typedProperties.to(Model16.class));
         assertThat(output.getMessage(), is("Too many arguments: setStr: 2"));
     }
 
     @Test
     public void testFromProperties() {
-        Properties props = new Properties();
+        TypedProperties props = new TypedProperties();
         props.put("test.found.string", "hello world");
-        Properties properties = Properties.from(props);
-        Model17 output = properties.to(Model17.class);
+        TypedProperties typedProperties = TypedProperties.from(props);
+        Model17 output = typedProperties.to(Model17.class);
         assertThat(output.getStr(), is("hello world"));
     }
 

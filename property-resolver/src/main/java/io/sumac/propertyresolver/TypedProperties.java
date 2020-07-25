@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Extension of {@code java.util.Properties} that adds some additional
+ * Extension of {@code Properties} that adds some additional
  * convenience methods such as additional property getters that can cast the result to primitive types like int or double,
  * methods that return an {@code Optional} object instead of a nullable value,
  * and methods that will automatically interpolate embedded placeholder keys within a property value.
@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  *
  * @author ross
  */
-public class Properties extends java.util.Properties {
+public class TypedProperties extends Properties {
 
     private Function<String, String> decryptor = (s) -> s; // placeholder
     private Function<String, String> interpolator = (s) -> InterpolationHelper.interpolate(this, s);
@@ -48,15 +48,15 @@ public class Properties extends java.util.Properties {
         throw new IllegalStateException("No registered validator. See setValidator(Executable validator) method.");
     }; // placeholder
 
-    public static Properties from(Map<?, ?> map) {
-        return new Properties(map);
+    public static TypedProperties from(Map<?, ?> map) {
+        return new TypedProperties(map);
     }
 
-    public Properties() {
+    public TypedProperties() {
         super();
     }
 
-    public Properties(Map<?, ?> properties) {
+    public TypedProperties(Map<?, ?> properties) {
         super();
         loadFromMap(properties);
     }
@@ -271,12 +271,12 @@ public class Properties extends java.util.Properties {
         this.putAll(map);
     }
 
-    public void loadFromSource(IOThrowingSupplier<java.util.Properties> source) throws IOException {
+    public void loadFromSource(IOThrowingSupplier<Properties> source) throws IOException {
         loadFromSource(Collections.singletonList(source));
     }
 
-    public void loadFromSource(List<IOThrowingSupplier<java.util.Properties>> sources) throws IOException {
-        for (IOThrowingSupplier<java.util.Properties> source : sources) {
+    public void loadFromSource(List<IOThrowingSupplier<Properties>> sources) throws IOException {
+        for (IOThrowingSupplier<Properties> source : sources) {
             loadFromMap(source.get());
         }
     }
@@ -356,9 +356,9 @@ public class Properties extends java.util.Properties {
         this.validator = validator;
     }
 
-    public Properties filterByRegex(String regex) {
+    public TypedProperties filterByRegex(String regex) {
         Pattern pattern = Pattern.compile(regex);
-        Properties result = new Properties();
+        TypedProperties result = new TypedProperties();
         this.forEach((k, v) -> {
             Matcher matcher = pattern.matcher(k.toString());
             if (matcher.matches()) {
@@ -368,8 +368,8 @@ public class Properties extends java.util.Properties {
         return result;
     }
 
-    public Properties filterByStartsWith(String keyStartsWith) {
-        Properties result = new Properties();
+    public TypedProperties filterByStartsWith(String keyStartsWith) {
+        TypedProperties result = new TypedProperties();
         this.forEach((k, v) -> {
             if (k instanceof String && k.toString().startsWith(keyStartsWith)) {
                 result.put(k, v);
@@ -378,12 +378,12 @@ public class Properties extends java.util.Properties {
         return result;
     }
 
-    public Properties getSubset(String parentPropertyKey) {
+    public TypedProperties getSubset(String parentPropertyKey) {
         return getSubset(parentPropertyKey, "");
     }
 
-    public Properties getSubset(String parentPropertyKey, String newPrefix) {
-        Properties result = new Properties();
+    public TypedProperties getSubset(String parentPropertyKey, String newPrefix) {
+        TypedProperties result = new TypedProperties();
         this.forEach((k, v) -> {
             if (k instanceof String && k.toString().startsWith(parentPropertyKey)) {
                 result.put(k.toString().replace(parentPropertyKey, newPrefix), v);
@@ -599,7 +599,7 @@ public class Properties extends java.util.Properties {
         private static final String DEFAULT_DELIMITER = ":";
         private static final String DEFAULT_VALUE = "";
 
-        public static String interpolate(java.util.Properties properties, String text) {
+        public static String interpolate(Properties properties, String text) {
 
             int startindex = text.indexOf(STARTS_WITH);
             if (startindex == -1) {

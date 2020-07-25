@@ -1,6 +1,6 @@
 package io.sumac.propertyutils;
 
-import io.sumac.propertyresolver.Properties;
+import io.sumac.propertyresolver.TypedProperties;
 import io.sumac.propertyresolver.PropertyResolverException;
 import io.sumac.propertyutils.domain.Fields;
 import io.sumac.propertyutils.domain.Model;
@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.is;
 
 public abstract class AbstractEnrichedPropertyResolverTest {
 
-    protected Properties systemUnderTest;
+    protected TypedProperties systemUnderTest;
 
     protected static final String STRING_KEY = "string";
     protected static final String INT_KEY = "int";
@@ -266,7 +266,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     }
 
     private void testGetChildProperties(String parent) {
-        Properties props = systemUnderTest.getSubset(parent);
+        TypedProperties props = systemUnderTest.getSubset(parent);
         assertThat(parent + STRING_KEY, props.getPropertyRequired(STRING_KEY), is(STRING_VALUE));
         assertThat(parent + INT_KEY, props.getPropertyRequired(INT_KEY), is(INT_STRING_VALUE));
         assertThat(parent + LONG_KEY, props.getPropertyRequired(LONG_KEY), is(LONG_STRING_VALUE));
@@ -288,7 +288,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     }
 
     private void testFilterByStartsWith(String parent) {
-        Properties props = systemUnderTest.filterByStartsWith(parent);
+        TypedProperties props = systemUnderTest.filterByStartsWith(parent);
         assertThat(parent + STRING_KEY, props.getPropertyRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
         assertThat(parent + INT_KEY, props.getPropertyRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
         assertThat(parent + LONG_KEY, props.getPropertyRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));
@@ -310,7 +310,7 @@ public abstract class AbstractEnrichedPropertyResolverTest {
     }
 
     private void testFilterByRegex(String parent, String regex) {
-        Properties props = systemUnderTest.filterByRegex(regex);
+        TypedProperties props = systemUnderTest.filterByRegex(regex);
         assertThat(parent + STRING_KEY, props.getPropertyRequired(parent + "." + STRING_KEY), is(STRING_VALUE));
         assertThat(parent + INT_KEY, props.getPropertyRequired(parent + "." + INT_KEY), is(INT_STRING_VALUE));
         assertThat(parent + LONG_KEY, props.getPropertyRequired(parent + "." + LONG_KEY), is(LONG_STRING_VALUE));

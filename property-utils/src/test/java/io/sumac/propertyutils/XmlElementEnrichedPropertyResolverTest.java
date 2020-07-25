@@ -2,7 +2,7 @@ package io.sumac.propertyutils;
 
 import java.io.IOException;
 
-import io.sumac.propertyresolver.Properties;
+import io.sumac.propertyresolver.TypedProperties;
 import io.sumac.propertyutils.domain.Model;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -12,7 +12,7 @@ public class XmlElementEnrichedPropertyResolverTest extends AbstractEnrichedProp
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException {
-        systemUnderTest = new Properties();
+        systemUnderTest = new TypedProperties();
         PropertiesHelper.loadXmlFromClasspath(systemUnderTest, "test_1.xml", Model.class);
     }
 }

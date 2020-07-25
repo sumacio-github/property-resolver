@@ -1,7 +1,7 @@
 package io.sumac.propertyutils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.sumac.propertyresolver.Properties;
+import io.sumac.propertyresolver.TypedProperties;
 import io.sumac.propertyutils.domain.Fields;
 import io.sumac.propertyutils.domain.Model;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,7 @@ public class PojoEnrichedPropertyResolverTest extends AbstractEnrichedPropertyRe
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException, ParseException {
-        systemUnderTest = new Properties();
+        systemUnderTest = new TypedProperties();
         Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse("1984-08-17T21:42:27.639-05:00");
         Fields fields = new Fields();
         fields.setStringVal("hello world");

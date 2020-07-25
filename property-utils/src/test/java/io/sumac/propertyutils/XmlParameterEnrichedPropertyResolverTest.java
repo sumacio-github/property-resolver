@@ -1,7 +1,7 @@
 package io.sumac.propertyutils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.sumac.propertyresolver.Properties;
+import io.sumac.propertyresolver.TypedProperties;
 import io.sumac.propertyutils.domain.Model;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -11,7 +11,7 @@ public class XmlParameterEnrichedPropertyResolverTest extends AbstractEnrichedPr
 
     @BeforeEach
     public void setUp() throws JsonProcessingException, IOException {
-        systemUnderTest = new Properties();
+        systemUnderTest = new TypedProperties();
         PropertiesHelper.loadXmlFromClasspath(systemUnderTest, "test_2.xml", Model.class);
     }
 
